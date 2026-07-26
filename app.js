@@ -167,6 +167,9 @@ class MahjongApp {
             this.showMessage(`已选择 ${TILES[this.winTile].name} 作为和牌`);
             this.updateWinTileDisplay();
             this.updateHandDisplay();
+
+            // 设置完和牌后，自动触发计算
+            this.calculate();
         }
     }
 

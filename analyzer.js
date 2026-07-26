@@ -480,6 +480,12 @@ class MahjongAnalyzer {
         // 添加和牌方式番种（边张、坎张、单钓将）
         this.addWinTypeFans(fans, decomp, allSets, pair);
 
+        // 无番和：官方定义为"和牌后，数不出任何番种分(花牌不计算在内)"
+        const nonFlowerFans = fans.filter(f => !f.name.startsWith('花牌'));
+        if (nonFlowerFans.length === 0) {
+            fans.push({ name: '无番和', score: 8 });
+        }
+
         // 应用"不计"规则过滤重复番种
         return this.applyExclusionRules(fans);
     }
@@ -551,6 +557,19 @@ class MahjongAnalyzer {
         }
 
         return null;
+    }
+
+    // 检查全求人：4副全部是吃/碰/明杠(手中无暗手面子)，且点炮和的是单钓的将牌
+    checkQuanQiuRen(allSets, pair) {
+        const concealedCount = allSets.length - this.melds.length;
+        if (concealedCount !== 0) return false;      // 手里必须没有自己组成的面子
+        if (this.melds.length !== 4) return false;    // 4副全部来自副露
+        if (!this.melds.every(m => m.type === 'chi' || m.type === 'pong' || m.type === 'minggang')) {
+            return false; // 暗杠不算"全靠吃碰"，故排除
+        }
+        if (this.conditions.isSelfDrawn) return false; // 必须是点和
+        if (pair !== this.winTile) return false;        // 和的必须是单钓的将牌
+        return true;
     }
 
     // 应用"不计"规则
@@ -825,18 +844,6 @@ class MahjongAnalyzer {
             fans.push({ name: '三色三节高', score: 8 });
         }
 
-        // 双暗杠
-        const anGangs = gangs.filter(s => s.type === 'angang');
-        if (anGangs.length === 2) {
-            fans.push({ name: '双暗杠', score: 8 });
-        }
-
-        // 双箭刻
-        const dragonPongs = pongs.filter(s => TILES[s.tiles[0]]?.type === TILE_TYPES.DRAGON);
-        if (dragonPongs.length === 2) {
-            fans.push({ name: '双箭刻', score: 8 });
-        }
-
         // 6番
         // 碰碰和
         if (pongs.length === 4) {
@@ -857,6 +864,23 @@ class MahjongAnalyzer {
         // 五门齐
         if (this.checkWuMenQi(allTiles)) {
             fans.push({ name: '五门齐', score: 6 });
+        }
+
+        // 全求人
+        if (this.checkQuanQiuRen(allSets, pair)) {
+            fans.push({ name: '全求人', score: 6 });
+        }
+
+        // 双暗杠
+        const anGangs = gangs.filter(s => s.type === 'angang');
+        if (anGangs.length === 2) {
+            fans.push({ name: '双暗杠', score: 6 });
+        }
+
+        // 双箭刻
+        const dragonPongs = pongs.filter(s => TILES[s.tiles[0]]?.type === TILE_TYPES.DRAGON);
+        if (dragonPongs.length === 2) {
+            fans.push({ name: '双箭刻', score: 6 });
         }
 
         // 4番
