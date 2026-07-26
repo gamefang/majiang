@@ -101,3 +101,59 @@ const FANS_DATA = [
     { id: 'huapai', name: '花牌', score: 1, desc: '每有1张花牌' },
     { id: 'erwubajiang', name: '二五八将', score: 1, desc: '258作将' },
 ];
+
+// 渲染番种参考面板
+function renderRulesReference() {
+    const rulesContainer = document.getElementById('rulesContent');
+    if (!rulesContainer || typeof FANS_DATA === 'undefined') return;
+
+    // 1. 按番数对 FANS_DATA 进行分组
+    const groupedFans = {};
+    FANS_DATA.forEach(fan => {
+        if (!groupedFans[fan.score]) {
+            groupedFans[fan.score] = [];
+        }
+        groupedFans[fan.score].push(fan);
+    });
+
+    // 2. 获取番数并按从大到小排序
+    const sortedScores = Object.keys(groupedFans)
+        .map(Number)
+        .sort((a, b) => b - a);
+
+    // 3. 拼接 HTML
+    let html = '';
+
+    sortedScores.forEach(score => {
+        const fans = groupedFans[score];
+        html += `
+            <details>
+                <summary>${score}番 (${fans.length}种)</summary>
+                <ul>
+                    ${fans.map(f => `<li><strong>${f.name}</strong> - ${f.desc}</li>`).join('')}
+                </ul>
+            </details>
+        `;
+    });
+
+    // 4. 追加静态的“使用说明”
+    html += `
+        <details>
+            <summary>使用说明</summary>
+            <ul>
+                <li>点击麻将牌添加到手牌（最多14张）</li>
+                <li>如有吃/碰/杠，点击对应按钮添加副露</li>
+                <li><strong>点击"和牌"区域选择和的那张牌</strong></li>
+                <li>设置和牌条件（自摸/点和、圈风、门风等）</li>
+                <li>点击"计算番数"查看结果</li>
+                <li>起和番数为8番</li>
+            </ul>
+        </details>
+    `;
+
+    // 5. 渲染页面
+    rulesContainer.innerHTML = html;
+}
+
+// DOM 加载完成后执行渲染
+document.addEventListener('DOMContentLoaded', renderRulesReference);

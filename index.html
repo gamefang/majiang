@@ -27,6 +27,11 @@
                 </div>
             </section>
 
+            <!-- 计算按钮 -->
+            <section class="calculate-section">
+                <button class="calculate-btn" id="calculateBtn">🧮 计算番数</button>
+            </section>
+
             <!-- 手牌显示区域 -->
             <section class="hand-section">
                 <h2>📋 当前手牌 <span class="tile-count">(<span id="handCount">0</span>/14)</span></h2>
@@ -76,6 +81,7 @@
                     <div class="condition-item">
                         <label>圈风</label>
                         <select id="prevalentWind">
+                            <option value="east">无</option>
                             <option value="east">东</option>
                             <option value="south">南</option>
                             <option value="west">西</option>
@@ -85,6 +91,7 @@
                     <div class="condition-item">
                         <label>门风</label>
                         <select id="seatWind">
+                            <option value="east">无</option>
                             <option value="east">东</option>
                             <option value="south">南</option>
                             <option value="west">西</option>
@@ -152,164 +159,11 @@
                 </div>
             </section>
 
-            <!-- 计算按钮 -->
-            <section class="calculate-section">
-                <button class="calculate-btn" id="calculateBtn">🧮 计算番数</button>
-            </section>
-
             <!-- 番种参考 -->
             <section class="rules-section">
                 <h2>📖 番种参考</h2>
-                <div class="rules-content">
-                    <details>
-                        <summary>88番 (7种)</summary>
-                        <ul>
-                            <li><strong>大四喜</strong> - 4副风牌刻子</li>
-                            <li><strong>大三元</strong> - 中发白3副刻子</li>
-                            <li><strong>绿一色</strong> - 23468条+发</li>
-                            <li><strong>九莲宝灯</strong> - 1112345678999同花色</li>
-                            <li><strong>四杠</strong> - 4副杠</li>
-                            <li><strong>连七对</strong> - 7个连续对子</li>
-                            <li><strong>十三幺</strong> - 19万条饼+7字牌</li>
-                        </ul>
-                    </details>
-                    <details>
-                        <summary>64番 (6种)</summary>
-                        <ul>
-                            <li><strong>清幺九</strong> - 仅由19组成</li>
-                            <li><strong>小四喜</strong> - 3风刻+1风对</li>
-                            <li><strong>小三元</strong> - 2箭刻+1箭对</li>
-                            <li><strong>字一色</strong> - 全字牌</li>
-                            <li><strong>四暗刻</strong> - 4副暗刻</li>
-                            <li><strong>一色双龙会</strong> - 同花色两个老少副+5将</li>
-                        </ul>
-                    </details>
-                    <details>
-                        <summary>48番 (2种)</summary>
-                        <ul>
-                            <li><strong>一色四同顺</strong> - 4副相同顺子</li>
-                            <li><strong>一色四节高</strong> - 4副递增刻子</li>
-                        </ul>
-                    </details>
-                    <details>
-                        <summary>32番 (3种)</summary>
-                        <ul>
-                            <li><strong>一色四步高</strong> - 4副递增顺子</li>
-                            <li><strong>三杠</strong> - 3副杠</li>
-                            <li><strong>混幺九</strong> - 字牌+序数牌1、9</li>
-                        </ul>
-                    </details>
-                    <details>
-                        <summary>24番 (9种)</summary>
-                        <ul>
-                            <li><strong>七对</strong> - 7个对子</li>
-                            <li><strong>七星不靠</strong> - 东南西北中发白+不相邻序数牌</li>
-                            <li><strong>全双刻</strong> - 全部由2468组成</li>
-                            <li><strong>清一色</strong> - 同一花色序数牌</li>
-                            <li><strong>一色三同顺</strong> - 3副相同顺子</li>
-                            <li><strong>一色三节高</strong> - 3副递增刻子</li>
-                            <li><strong>全大</strong> - 全部由789组成</li>
-                            <li><strong>全中</strong> - 全部由456组成</li>
-                            <li><strong>全小</strong> - 全部由123组成</li>
-                        </ul>
-                    </details>
-                    <details>
-                        <summary>16番 (6种)</summary>
-                        <ul>
-                            <li><strong>清龙</strong> - 同花色123+456+789</li>
-                            <li><strong>三色双龙会</strong> - 2色老少副+另色5将</li>
-                            <li><strong>一色三步高</strong> - 3副递增顺子</li>
-                            <li><strong>全带五</strong> - 每副牌都有5</li>
-                            <li><strong>三同刻</strong> - 3种花色同数刻子</li>
-                            <li><strong>三暗刻</strong> - 3副暗刻</li>
-                        </ul>
-                    </details>
-                    <details>
-                        <summary>12番 (5种)</summary>
-                        <ul>
-                            <li><strong>全不靠</strong> - 不相邻序数牌+全部字牌</li>
-                            <li><strong>组合龙</strong> - 3色的147+258+369</li>
-                            <li><strong>大于五</strong> - 全部由6789组成</li>
-                            <li><strong>小于五</strong> - 全部由1234组成</li>
-                            <li><strong>三风刻</strong> - 3副风刻</li>
-                        </ul>
-                    </details>
-                    <details>
-                        <summary>8番 (9种)</summary>
-                        <ul>
-                            <li><strong>妙手回春</strong> - 自摸最后一张牌</li>
-                            <li><strong>海底捞月</strong> - 和最后一张打出的牌</li>
-                            <li><strong>杠上开花</strong> - 杠后补牌成和</li>
-                            <li><strong>抢杠和</strong> - 和别人加杠的牌</li>
-                            <li><strong>花龙</strong> - 3色组成123456789</li>
-                            <li><strong>推不倒</strong> - 上下对称的牌</li>
-                            <li><strong>三色三同顺</strong> - 3色同数顺子</li>
-                            <li><strong>三色三节高</strong> - 3色递增刻子</li>
-                            <li><strong>无番和</strong> - 和牌后无番种</li>
-                        </ul>
-                    </details>
-                    <details>
-                        <summary>6番 (4种)</summary>
-                        <ul>
-                            <li><strong>碰碰和</strong> - 4副刻子</li>
-                            <li><strong>混一色</strong> - 序数牌+字牌</li>
-                            <li><strong>三色三步高</strong> - 3色递增顺子</li>
-                            <li><strong>五门齐</strong> - 万条饼风箭齐全</li>
-                        </ul>
-                    </details>
-                    <details>
-                        <summary>4番 (4种)</summary>
-                        <ul>
-                            <li><strong>全带幺</strong> - 每副牌都有19或字牌</li>
-                            <li><strong>不求人</strong> - 门清自摸</li>
-                            <li><strong>双明杠</strong> - 2副明杠</li>
-                            <li><strong>和绝张</strong> - 和第4张牌</li>
-                        </ul>
-                    </details>
-                    <details>
-                        <summary>2番 (10种)</summary>
-                        <ul>
-                            <li><strong>箭刻</strong> - 中/发/白刻子</li>
-                            <li><strong>圈风刻</strong> - 与圈风相同的刻子</li>
-                            <li><strong>门风刻</strong> - 与门风相同的刻子</li>
-                            <li><strong>门前清</strong> - 门清和别人的牌</li>
-                            <li><strong>平和</strong> - 4顺子+序数牌将</li>
-                            <li><strong>四归一</strong> - 4张同牌分在各副中</li>
-                            <li><strong>双同刻</strong> - 2副同数刻子</li>
-                            <li><strong>双暗刻</strong> - 2副暗刻</li>
-                            <li><strong>暗杠</strong> - 1副暗杠</li>
-                            <li><strong>断幺</strong> - 没有19和字牌</li>
-                        </ul>
-                    </details>
-                    <details>
-                        <summary>1番 (13种)</summary>
-                        <ul>
-                            <li><strong>一般高</strong> - 2副同顺子</li>
-                            <li><strong>喜相逢</strong> - 2色同数顺子</li>
-                            <li><strong>连六</strong> - 2副相连顺子</li>
-                            <li><strong>老少副</strong> - 123+789同花色</li>
-                            <li><strong>幺九刻</strong> - 19序数牌刻子</li>
-                            <li><strong>明杠</strong> - 1副明杠</li>
-                            <li><strong>缺一门</strong> - 缺少万/条/饼之一</li>
-                            <li><strong>无字</strong> - 没有字牌</li>
-                            <li><strong>边张</strong> - 单和12的3或89的7</li>
-                            <li><strong>坎张</strong> - 和嵌张</li>
-                            <li><strong>单钓将</strong> - 单和将牌</li>
-                            <li><strong>自摸</strong> - 自己摸牌和</li>
-                            <li><strong>花牌</strong> - 每有1张花牌</li>
-                        </ul>
-                    </details>
-                    <details>
-                        <summary>使用说明</summary>
-                        <ul>
-                            <li>点击麻将牌添加到手牌（最多14张）</li>
-                            <li>如有吃/碰/杠，点击对应按钮添加副露</li>
-                            <li><strong>点击"和牌"区域选择和的那张牌</strong></li>
-                            <li>设置和牌条件（自摸/点和、圈风、门风等）</li>
-                            <li>点击"计算番数"查看结果</li>
-                            <li>起和番数为8番</li>
-                        </ul>
-                    </details>
+                <div class="rules-content" id="rulesContent">
+                <!-- 此处内容将通过 JavaScript 根据 FANS_DATA 动态生成 -->
                 </div>
             </section>
         </main>
