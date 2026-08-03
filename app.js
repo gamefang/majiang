@@ -1,14 +1,67 @@
-// 国标麻将算番器 - 主应用逻辑
+// 渲染番种参考面板 (视图层逻辑)
+function renderRulesReference() {
+    const rulesContainer = document.getElementById('rulesContent');
+    if (!rulesContainer || typeof FANS_DATA === 'undefined') return;
 
+    // 1. 按番数对 FANS_DATA 进行分组
+    const groupedFans = {};
+    FANS_DATA.forEach(fan => {
+        if (!groupedFans[fan.score]) {
+            groupedFans[fan.score] = [];
+        }
+        groupedFans[fan.score].push(fan);
+    });
+
+    // 2. 获取番数并按从大到小排序
+    const sortedScores = Object.keys(groupedFans)
+        .map(Number)
+        .sort((a, b) => b - a);
+
+    // 3. 拼接 HTML
+    let html = '';
+
+    sortedScores.forEach(score => {
+        const fans = groupedFans[score];
+        html += `
+            <details>
+                <summary>${score}番 (${fans.length}种)</summary>
+                <ul>
+                    ${fans.map(f => `<li><strong>${f.name}</strong> - ${f.desc}</li>`).join('')}
+                </ul>
+            </details>
+        `;
+    });
+
+    // 4. 追加静态的“使用说明” (从配置中读取)
+    if (typeof USAGE_GUIDE !== 'undefined') {
+        html += `
+            <details>
+                <summary>使用说明</summary>
+                <ul>
+                    ${USAGE_GUIDE.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+            </details>
+        `;
+    }
+
+    // 5. 渲染页面
+    rulesContainer.innerHTML = html;
+}
+
+// DOM 加载完成后执行渲染
+document.addEventListener('DOMContentLoaded', renderRulesReference);
+
+
+// 国标麻将算番器 - 主应用逻辑 (业务层)
 class MahjongApp {
     constructor() {
         this.hand = [];
         this.melds = [];
-        this.winTile = null;  // 和牌（最后和的那张牌）
-        this.winTileIndex = -1; // 和牌在手牌中的索引
-        this.selectingWinTile = false; // 是否正在选择和牌
-        this.tileUsage = {};  // 记录每张牌使用次数
-        this.maxTileCount = 4; // 每种牌最多4张
+        this.winTile = null;
+        this.winTileIndex = -1;
+        this.selectingWinTile = false;
+        this.tileUsage = {};
+        this.maxTileCount = 4;
         
         this.meldModal = {
             type: null,
@@ -32,15 +85,10 @@ class MahjongApp {
     }
 
     renderTileSelector() {
-        // 万
         this.renderTileGroup('wanTiles', TILES_BY_TYPE.wan);
-        // 条
         this.renderTileGroup('tiaoTiles', TILES_BY_TYPE.tiao);
-        // 饼
         this.renderTileGroup('bingTiles', TILES_BY_TYPE.bing);
-        // 风
         this.renderTileGroup('windTiles', TILES_BY_TYPE.wind);
-        // 箭
         this.renderTileGroup('dragonTiles', TILES_BY_TYPE.dragon);
     }
 
@@ -62,7 +110,6 @@ class MahjongApp {
     }
 
     bindEvents() {
-        // 牌选择
         document.querySelectorAll('.tiles-row').forEach(row => {
             row.addEventListener('click', (e) => {
                 const tileBtn = e.target.closest('.tile-btn');
@@ -72,24 +119,15 @@ class MahjongApp {
             });
         });
 
-        // 清空手牌
-        document.getElementById('clearHand')?.addEventListener('click', () => {
-            this.clearHand();
-        });
+        document.getElementById('clearHand')?.addEventListener('click', () => this.clearHand());
+        document.getElementById('undoTile')?.addEventListener('click', () => this.undoLastTile());
 
-        // 撤销
-        document.getElementById('undoTile')?.addEventListener('click', () => {
-            this.undoLastTile();
-        });
-
-        // 副露按钮
         document.getElementById('addChi')?.addEventListener('click', () => this.openMeldModal('chi'));
         document.getElementById('addPong')?.addEventListener('click', () => this.openMeldModal('pong'));
         document.getElementById('addMingGang')?.addEventListener('click', () => this.openMeldModal('minggang'));
         document.getElementById('addAnGang')?.addEventListener('click', () => this.openMeldModal('angang'));
         document.getElementById('clearMelds')?.addEventListener('click', () => this.clearMelds());
 
-        // 弹窗
         document.getElementById('modalClose')?.addEventListener('click', () => this.closeMeldModal());
         document.getElementById('modalCancel')?.addEventListener('click', () => this.closeMeldModal());
         document.getElementById('modalConfirm')?.addEventListener('click', () => this.confirmMeld());
@@ -100,17 +138,12 @@ class MahjongApp {
             }
         });
 
-        // 计算按钮
-        document.getElementById('calculateBtn')?.addEventListener('click', () => {
-            this.calculate();
-        });
+        document.getElementById('calculateBtn')?.addEventListener('click', () => this.calculate());
 
-        // 条件变化
         document.querySelectorAll('.conditions-section select, .conditions-section input').forEach(el => {
             el.addEventListener('change', () => this.updateConditions());
         });
 
-        // 手牌区域点击 - 选择和牌或移除
         document.getElementById('handDisplay')?.addEventListener('click', (e) => {
             const tileEl = e.target.closest('.hand-tile');
             if (tileEl) {
@@ -123,18 +156,10 @@ class MahjongApp {
             }
         });
 
-        // 选择和牌按钮 - 进入选择模式
-        document.getElementById('selectWinTile')?.addEventListener('click', () => {
-            this.startWinTileSelection();
-        });
-
-        // 清除和牌
-        document.getElementById('clearWinTile')?.addEventListener('click', () => {
-            this.clearWinTile();
-        });
+        document.getElementById('selectWinTile')?.addEventListener('click', () => this.startWinTileSelection());
+        document.getElementById('clearWinTile')?.addEventListener('click', () => this.clearWinTile());
     }
 
-    // 开始选择和牌模式
     startWinTileSelection() {
         if (this.hand.length === 0) {
             this.showMessage('请先添加手牌');
@@ -142,22 +167,17 @@ class MahjongApp {
         }
         
         this.selectingWinTile = true;
-        const handDisplay = document.getElementById('handDisplay');
-        const selectBtn = document.getElementById('selectWinTile');
-        
-        handDisplay?.classList.add('selecting-win-tile');
-        selectBtn?.classList.add('active');
+        document.getElementById('handDisplay')?.classList.add('selecting-win-tile');
+        document.getElementById('selectWinTile')?.classList.add('active');
         this.showMessage('👆 请点击手牌中的一张作为和牌');
     }
 
-    // 取消选择模式
     cancelWinTileSelection() {
         this.selectingWinTile = false;
         document.getElementById('handDisplay')?.classList.remove('selecting-win-tile');
         document.getElementById('selectWinTile')?.classList.remove('active');
     }
 
-    // 设置和牌
     setWinTile(index) {
         if (index >= 0 && index < this.hand.length) {
             this.winTile = this.hand[index];
@@ -167,13 +187,10 @@ class MahjongApp {
             this.showMessage(`已选择 ${TILES[this.winTile].name} 作为和牌`);
             this.updateWinTileDisplay();
             this.updateHandDisplay();
-
-            // 设置完和牌后，自动触发计算
             this.calculate();
         }
     }
 
-    // 清除和牌选择
     clearWinTile() {
         this.winTile = null;
         this.winTileIndex = -1;
@@ -183,7 +200,6 @@ class MahjongApp {
         this.updateHandDisplay();
     }
 
-    // 更新和牌显示
     updateWinTileDisplay() {
         const container = document.getElementById('winTileDisplay');
         if (!container) return;
@@ -219,12 +235,10 @@ class MahjongApp {
             this.hand.splice(index, 1);
             this.tileUsage[tileId]--;
             
-            // 如果移除的是和牌，清除和牌选择
             if (index === this.winTileIndex) {
                 this.winTile = null;
                 this.winTileIndex = -1;
             } else if (index < this.winTileIndex) {
-                // 如果移除的是和牌前面的牌，更新和牌索引
                 this.winTileIndex--;
             }
             
@@ -267,22 +281,12 @@ class MahjongApp {
         const title = document.getElementById('modalTitle');
         const instruction = document.getElementById('modalInstruction');
         
-        const typeNames = {
-            chi: '吃',
-            pong: '碰',
-            minggang: '明杠',
-            angang: '暗杠'
-        };
-
+        const typeNames = { chi: '吃', pong: '碰', minggang: '明杠', angang: '暗杠' };
         title.textContent = `添加${typeNames[type]}`;
         
-        if (type === 'chi') {
-            instruction.textContent = '请依次选择3张连续的序数牌';
-        } else if (type === 'pong') {
-            instruction.textContent = '请选择1张牌（自动组成3张）';
-        } else {
-            instruction.textContent = '请选择1张牌（自动组成4张）';
-        }
+        if (type === 'chi') instruction.textContent = '请依次选择3张连续的序数牌';
+        else if (type === 'pong') instruction.textContent = '请选择1张牌（自动组成3张）';
+        else instruction.textContent = '请选择1张牌（自动组成4张）';
 
         this.renderModalTiles();
         modal.classList.add('show');
@@ -292,21 +296,16 @@ class MahjongApp {
         const container = document.getElementById('modalTiles');
         const selectedContainer = document.getElementById('selectedMeldTiles');
         
-        // 根据副露类型显示可选的牌
         let availableTiles = [];
-        
         if (this.meldModal.type === 'chi') {
-            // 吃只能是序数牌
             availableTiles = [...TILES_BY_TYPE.wan, ...TILES_BY_TYPE.tiao, ...TILES_BY_TYPE.bing];
         } else {
-            // 碰和杠可以是任何牌
             availableTiles = Object.keys(TILES);
         }
 
         container.innerHTML = availableTiles.map(tileId => {
             const tile = TILES[tileId];
-            const neededCount = this.meldModal.type === 'chi' ? 1 : 
-                              (this.meldModal.type === 'pong' ? 3 : 4);
+            const neededCount = this.meldModal.type === 'chi' ? 1 : (this.meldModal.type === 'pong' ? 3 : 4);
             const available = this.maxTileCount - this.tileUsage[tileId];
             const isDisabled = available < (this.meldModal.type === 'chi' ? 1 : neededCount);
             
@@ -317,7 +316,6 @@ class MahjongApp {
             `;
         }).join('');
 
-        // 显示已选择的牌
         selectedContainer.innerHTML = this.meldModal.selectedTiles.map(tileId => {
             const tile = TILES[tileId];
             return `<span class="selected-tile">${tile.unicode}</span>`;
@@ -328,19 +326,15 @@ class MahjongApp {
         const { type, selectedTiles } = this.meldModal;
         
         if (type === 'chi') {
-            // 吃需要3张连续牌
             if (selectedTiles.length < 3) {
-                // 检查是否可以形成顺子
                 if (selectedTiles.length === 0) {
                     selectedTiles.push(tileId);
                 } else {
-                    // 检查是否同花色且可以连续
                     const firstTile = TILES[selectedTiles[0]];
                     const newTile = TILES[tileId];
                     
                     if (firstTile.type === newTile.type && isNumberTile(tileId)) {
                         selectedTiles.push(tileId);
-                        // 排序
                         selectedTiles.sort((a, b) => TILES[a].value - TILES[b].value);
                     } else {
                         this.showMessage('吃必须是同花色的序数牌');
@@ -349,7 +343,6 @@ class MahjongApp {
                 }
             }
         } else {
-            // 碰或杠只需选一张
             this.meldModal.selectedTiles = [tileId];
         }
 
@@ -364,23 +357,18 @@ class MahjongApp {
                 this.showMessage('请选择3张牌');
                 return;
             }
-            // 先按数值排序
             selectedTiles.sort((a, b) => TILES[a].value - TILES[b].value);
-            
-            // 检查是否连续
             const values = selectedTiles.map(t => TILES[t].value);
             if (values[1] !== values[0] + 1 || values[2] !== values[1] + 1) {
                 this.showMessage('顺子必须是连续的3张牌');
                 return;
             }
-            // 检查是否有足够的牌
             for (const tileId of selectedTiles) {
                 if (this.tileUsage[tileId] >= this.maxTileCount) {
                     this.showMessage(`${TILES[tileId].name}已用完`);
                     return;
                 }
             }
-            // 添加副露（已排序）
             const meld = { type: 'chi', tiles: [...selectedTiles] };
             this.melds.push(meld);
             for (const tileId of selectedTiles) {
@@ -400,10 +388,7 @@ class MahjongApp {
                 return;
             }
 
-            const meld = { 
-                type: type, 
-                tiles: Array(count).fill(tileId) 
-            };
+            const meld = { type: type, tiles: Array(count).fill(tileId) };
             this.melds.push(meld);
             this.tileUsage[tileId] += count;
         }
@@ -434,20 +419,14 @@ class MahjongApp {
             return;
         }
 
-        // 创建索引映射用于排序后追踪原始索引
         const indexedHand = this.hand.map((tileId, index) => ({ tileId, originalIndex: index }));
         
-        // 按花色和数字排序
         indexedHand.sort((a, b) => {
             const tileA = TILES[a.tileId];
             const tileB = TILES[b.tileId];
             const typeOrder = { wan: 0, tiao: 1, bing: 2, wind: 3, dragon: 4 };
-            if (tileA.type !== tileB.type) {
-                return typeOrder[tileA.type] - typeOrder[tileB.type];
-            }
-            if (typeof tileA.value === 'number' && typeof tileB.value === 'number') {
-                return tileA.value - tileB.value;
-            }
+            if (tileA.type !== tileB.type) return typeOrder[tileA.type] - typeOrder[tileB.type];
+            if (typeof tileA.value === 'number' && typeof tileB.value === 'number') return tileA.value - tileB.value;
             return 0;
         });
 
@@ -508,15 +487,8 @@ class MahjongApp {
             const remaining = this.maxTileCount - this.tileUsage[tileId];
             const countEl = btn.querySelector('.tile-count');
             
-            if (countEl) {
-                countEl.textContent = remaining;
-            }
-            
-            if (remaining === 0) {
-                btn.classList.add('disabled');
-            } else {
-                btn.classList.remove('disabled');
-            }
+            if (countEl) countEl.textContent = remaining;
+            btn.classList.toggle('disabled', remaining === 0);
         });
     }
 
@@ -528,9 +500,7 @@ class MahjongApp {
         }
     }
 
-    updateConditions() {
-        // 条件会在计算时读取
-    }
+    updateConditions() {}
 
     getConditions() {
         return {
@@ -548,29 +518,21 @@ class MahjongApp {
         const totalTiles = this.hand.length + this.melds.reduce((sum, m) => sum + m.tiles.length, 0);
         
         if (totalTiles !== 14) {
-            this.showResult({
-                valid: false,
-                message: `牌数不正确，当前${totalTiles}张，需要14张`
-            });
+            this.showResult({ valid: false, message: `牌数不正确，当前${totalTiles}张，需要14张` });
             return;
         }
 
-        // 检查是否选择了和牌
         if (!this.winTile) {
-            this.showResult({
-                valid: false,
-                message: '请先选择和牌（点击"和牌"区域，然后点击手牌中的一张）'
-            });
+            this.showResult({ valid: false, message: '请先选择和牌（点击"和牌"区域，然后点击手牌中的一张）' });
             return;
         }
 
         const conditions = this.getConditions();
-        
-        // 设置分析器数据，传入和牌
         analyzer.setHand(this.hand, this.melds, this.winTile, conditions);
-        
-        // 分析
         const result = analyzer.analyze();
+        
+        // 计算最终总分
+        result.totalScore = result.fans.reduce((sum, f) => sum + f.score, 0);
         
         this.showResult(result);
     }
@@ -586,19 +548,14 @@ class MahjongApp {
         }
 
         scoreEl.textContent = result.totalScore;
-        
-        // 动画
         scoreEl.style.transform = 'scale(1.2)';
-        setTimeout(() => {
-            scoreEl.style.transform = 'scale(1)';
-        }, 200);
+        setTimeout(() => { scoreEl.style.transform = 'scale(1)'; }, 200);
 
         if (result.fans.length === 0) {
             fansEl.innerHTML = '<p class="placeholder">无番和（8番起和）</p>';
             return;
         }
 
-        // 按番数排序
         const sortedFans = [...result.fans].sort((a, b) => b.score - a.score);
         
         fansEl.innerHTML = sortedFans.map(fan => `
@@ -608,14 +565,12 @@ class MahjongApp {
             </span>
         `).join('');
 
-        // 检查是否满足起和要求
         if (result.totalScore < 8) {
             fansEl.innerHTML += '<p class="warning-message">⚠️ 未满8番，不能和牌</p>';
         }
     }
 
     showMessage(msg) {
-        // 简单的消息提示
         const existing = document.querySelector('.toast-message');
         if (existing) existing.remove();
 
@@ -624,10 +579,7 @@ class MahjongApp {
         toast.textContent = msg;
         document.body.appendChild(toast);
 
-        setTimeout(() => {
-            toast.classList.add('show');
-        }, 10);
-
+        setTimeout(() => { toast.classList.add('show'); }, 10);
         setTimeout(() => {
             toast.classList.remove('show');
             setTimeout(() => toast.remove(), 300);

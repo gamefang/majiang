@@ -1,63 +1,19 @@
-// 国标麻将番种分析器
+// 国标麻将番种分析器 (纯逻辑层)
 
-// 1. 动态构建番种映射表 (ID -> 番种对象) 和 名称到ID的反向映射
+// 动态构建映射表 (ID -> 番种对象) 和 排除规则表
 const FANS_MAP = {};
-const FANS_NAME_TO_ID = {};
+const EXCLUSION_RULES_BY_ID = {};
 
 if (typeof FANS_DATA !== 'undefined') {
     FANS_DATA.forEach(fan => {
         FANS_MAP[fan.id] = fan;
-        FANS_NAME_TO_ID[fan.name] = fan.id;
+        // 提取不计规则
+        if (fan.exclusion && fan.exclusion.length > 0) {
+            EXCLUSION_RULES_BY_ID[fan.id] = fan.exclusion;
+        }
     });
-}
-
-// 2. 动态构建基于 ID 的"不计"规则表
-const RAW_EXCLUSION_RULES = {
-    '大四喜': ['圈风刻', '门风刻', '三风刻', '碰碰和'],
-    '大三元': ['箭刻'],
-    '绿一色': ['混一色'],
-    '九莲宝灯': ['清一色'],
-    '连七对': ['清一色', '不求人', '单钓将', '门前清'],
-    '十三幺': ['五门齐', '不求人', '单钓将', '门前清'],
-    '清幺九': ['碰碰和', '双同刻', '无字', '幺九刻'],
-    '小四喜': ['三风刻'],
-    '小三元': ['箭刻', '双箭刻'],
-    '字一色': ['碰碰和'],
-    '四暗刻': ['门前清', '碰碰和'],
-    '一色双龙会': ['平和', '七对', '清一色', '老少副', '一般高'],
-    '一色四同顺': ['一色三节高', '一般高', '四归一', '一色三同顺'],
-    '一色四节高': ['一色三同顺', '碰碰和', '一色三节高'],
-    '混幺九': ['碰碰和', '幺九刻', '全带幺'],
-    '七对': ['不求人', '单钓将', '门前清'],
-    '七星不靠': ['五门齐', '不求人', '单钓将', '门前清'],
-    '全双刻': ['碰碰和', '断幺'],
-    '清一色': ['无字'],
-    '一色三同顺': ['一色三节高', '一般高'],
-    '一色三节高': ['一色三同顺'],
-    '全大': ['无字', '大于五'],
-    '全中': ['断幺'],
-    '全小': ['无字', '小于五'],
-    '三色双龙会': ['喜相逢', '老少副', '无字', '平和'],
-    '全带五': ['断幺'],
-    '全不靠': ['五门齐', '不求人', '单钓将', '门前清'],
-    '大于五': ['无字'],
-    '小于五': ['无字'],
-    '妙手回春': ['自摸'],
-    '杠上开花': ['自摸'],
-    '抢杠和': ['和绝张'],
-    '推不倒': ['缺一门'],
-    '全求人': ['单钓将'],
-    '不求人': ['自摸', '门前清'],
-};
-
-const EXCLUSION_RULES_BY_ID = {};
-for (const [name, excludedNames] of Object.entries(RAW_EXCLUSION_RULES)) {
-    const mainId = FANS_NAME_TO_ID[name];
-    if (mainId) {
-        EXCLUSION_RULES_BY_ID[mainId] = excludedNames
-            .map(n => FANS_NAME_TO_ID[n])
-            .filter(id => id !== undefined);
-    }
+} else {
+    console.error('[Analyzer] FANS_DATA 未定义，请确保 fans.js 已加载');
 }
 
 class MahjongAnalyzer {
@@ -91,7 +47,7 @@ class MahjongAnalyzer {
     addFan(fansArray, fanId, overrides = {}) {
         const fan = FANS_MAP[fanId];
         if (!fan) {
-            console.warn(`[MahjongAnalyzer] 未知的番种 ID: ${fanId}`);
+            console.warn(`[Analyzer] 未知的番种 ID: ${fanId}`);
             return;
         }
         fansArray.push({
@@ -214,7 +170,7 @@ class MahjongAnalyzer {
             const fans = [];
             this.addFan(fans, 'shisanyao');
             this.addConditionFans(fans);
-            return { valid: true, fans: this.applyExclusionRules(fans), totalScore: 0 }; // totalScore 会在外面重新计算
+            return { valid: true, fans: this.applyExclusionRules(fans), totalScore: 0 };
         }
 
         if (this.melds.length === 0 && this.checkQiXingBuKao(tileCount)) {
@@ -363,7 +319,7 @@ class MahjongAnalyzer {
                     }
                 }
                 if (isConsecutive) {
-                    fans.length = 0; // 清空七对
+                    fans.length = 0;
                     this.addFan(fans, 'lianqidui');
                     break;
                 }
@@ -463,6 +419,7 @@ class MahjongAnalyzer {
         return true;
     }
 
+    // 动态应用"不计"规则
     applyExclusionRules(fans) {
         const excludedFanIds = new Set();
 
@@ -481,21 +438,11 @@ class MahjongAnalyzer {
     check88Fan(fans, allSets, pair, allTiles, tileCount) {
         const pongs = allSets.filter(s => s.type === 'pong' || s.type === 'minggang' || s.type === 'angang');
         
-        if (pongs.filter(s => TILES[s.tiles[0]]?.type === TILE_TYPES.WIND).length === 4) {
-            this.addFan(fans, 'dasixi');
-        }
-        if (pongs.filter(s => TILES[s.tiles[0]]?.type === TILE_TYPES.DRAGON).length === 3) {
-            this.addFan(fans, 'dasanyuan');
-        }
-        if (allTiles.every(t => GREEN_TILES.includes(t))) {
-            this.addFan(fans, 'lvyise');
-        }
-        if (this.checkJiuLianBaoDeng(tileCount)) {
-            this.addFan(fans, 'jiulianbaodeng');
-        }
-        if (allSets.filter(s => s.type === 'minggang' || s.type === 'angang').length === 4) {
-            this.addFan(fans, 'sigang');
-        }
+        if (pongs.filter(s => TILES[s.tiles[0]]?.type === TILE_TYPES.WIND).length === 4) this.addFan(fans, 'dasixi');
+        if (pongs.filter(s => TILES[s.tiles[0]]?.type === TILE_TYPES.DRAGON).length === 3) this.addFan(fans, 'dasanyuan');
+        if (allTiles.every(t => GREEN_TILES.includes(t))) this.addFan(fans, 'lvyise');
+        if (this.checkJiuLianBaoDeng(tileCount)) this.addFan(fans, 'jiulianbaodeng');
+        if (allSets.filter(s => s.type === 'minggang' || s.type === 'angang').length === 4) this.addFan(fans, 'sigang');
     }
 
     check64Fan(fans, allSets, pair, allTiles, tileCount) {
@@ -504,14 +451,10 @@ class MahjongAnalyzer {
         if (allTiles.every(t => isTerminal(t))) this.addFan(fans, 'qingyaojiu');
         
         const windPongs = pongs.filter(s => TILES[s.tiles[0]]?.type === TILE_TYPES.WIND);
-        if (windPongs.length === 3 && TILES[pair]?.type === TILE_TYPES.WIND) {
-            this.addFan(fans, 'xiaosixi');
-        }
+        if (windPongs.length === 3 && TILES[pair]?.type === TILE_TYPES.WIND) this.addFan(fans, 'xiaosixi');
 
         const dragonPongs = pongs.filter(s => TILES[s.tiles[0]]?.type === TILE_TYPES.DRAGON);
-        if (dragonPongs.length === 2 && TILES[pair]?.type === TILE_TYPES.DRAGON) {
-            this.addFan(fans, 'xiaosanyuan');
-        }
+        if (dragonPongs.length === 2 && TILES[pair]?.type === TILE_TYPES.DRAGON) this.addFan(fans, 'xiaosanyuan');
 
         if (allTiles.every(t => isHonorTile(t))) this.addFan(fans, 'ziyise');
 
@@ -542,14 +485,10 @@ class MahjongAnalyzer {
 
     check24Fan(fans, allSets, pair, allTiles, tileCount) {
         const types = new Set(allTiles.map(t => TILES[t]?.type));
-        if (types.size === 1 && !allTiles.some(t => isHonorTile(t))) {
-            this.addFan(fans, 'qingyise');
-        }
+        if (types.size === 1 && !allTiles.some(t => isHonorTile(t))) this.addFan(fans, 'qingyise');
 
         const pongs = allSets.filter(s => s.type === 'pong' || s.type === 'minggang' || s.type === 'angang');
-        if (pongs.length === 4 && allTiles.every(t => isNumberTile(t) && TILES[t].value % 2 === 0)) {
-            this.addFan(fans, 'quanshuangke');
-        }
+        if (pongs.length === 4 && allTiles.every(t => isNumberTile(t) && TILES[t].value % 2 === 0)) this.addFan(fans, 'quanshuangke');
 
         const chis = allSets.filter(s => s.type === 'chi');
         if (this.checkSameChiCount(chis, 3)) this.addFan(fans, 'yisesantongshun');
@@ -617,7 +556,6 @@ class MahjongAnalyzer {
         if (allTiles.every(t => !isTerminalOrHonor(t))) this.addFan(fans, 'duanyao');
         if (this.checkShuangTongKe(pongs)) this.addFan(fans, 'shuangtongke');
 
-        // 叠加番种处理
         const siGuiYiCount = this.checkSiGuiYi(allSets, pair, allTiles);
         if (siGuiYiCount > 0) {
             this.addFan(fans, 'siguiyi', { score: 2 * siGuiYiCount, name: `四归一×${siGuiYiCount}` });
