@@ -3,7 +3,7 @@ const FANS_DATA = [
     // 88番 (7种)
     { id: 'dasixi', name: '大四喜', score: 88, desc: '4副風牌刻子 🀀🀀🀀 🀁🀁🀁 🀂🀂🀂 🀃🀃🀃' },
     { id: 'dasanyuan', name: '大三元', score: 88, desc: '中發白3副刻子 🀄🀄🀄 🀅🀅🀅 🀆🀆🀆' },
-    { id: 'lvyise', name: '綠一色', score: 88, desc: '由23468條及發組成 🀐🀐🀐 🀑🀒🀓 🀕🀕🀕 🀗🀗 🀅🀅🀅' },
+    { id: 'lvyise', name: '綠一色', score: 88, desc: '由23468條及發組成 🀑🀒🀓 🀕🀕🀕 🀗🀗 🀅🀅🀅' },
     { id: 'jiulianbaodeng', name: '九蓮寶燈', score: 88, desc: '同花色1112345678999 🀇🀇🀇🀈🀉🀊🀋🀌🀍🀎🀏🀏🀏和任意萬' },
     { id: 'sigang', name: '四槓', score: 88, desc: '4副槓 🀇🀇🀇🀇 🀉🀉🀉🀉 🀕🀕🀕🀕 🀝🀝🀝🀝' },
     { id: 'lianqidui', name: '連七對', score: 88, desc: '連續的7對 🀇🀇 🀈🀈 🀉🀉 🀊🀊 🀋🀋 🀌🀌 🀍🀍' },
@@ -95,7 +95,7 @@ const FANS_DATA = [
     { id: 'xixiangfeng', name: '喜相逢', score: 1, desc: '2種花色2副序數相同的順子 🀇🀈🀉 🀐🀑🀒' },
     { id: 'lianliu', name: '連六', score: 1, desc: '同花色6張相連順子 🀈🀉🀊 🀋🀌🀍' },
     { id: 'laoshaofu', name: '老少副', score: 1, desc: '同花色123+789 🀇🀈🀉 🀍🀎🀏' },
-    { id: 'yaojiuke', name: '幺九刻', score: 1, desc: '3張1或9序数牌 🀇🀇🀇' },
+    { id: 'yaojiuke', name: '幺九刻', score: 1, desc: '3張1或9序数牌或非門風圈風的風牌 🀇🀇🀇' },
     { id: 'minggang', name: '明槓', score: 1, desc: '1副明杠 🀇🀇🀇🀇' },
     { id: 'queyimen', name: '缺一門', score: 1, desc: '和牌中缺少一種花色序數牌，如只有萬和餅' },
     { id: 'wuzi', name: '無字', score: 1, desc: '和牌中沒有字牌(東南西北中發白)' },
