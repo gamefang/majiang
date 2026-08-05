@@ -32,7 +32,7 @@ function renderRulesReference() {
         `;
     });
 
-    // 4. 追加静态的“使用说明” (从配置中读取)
+    // 4. 追加静态的"使用说明" (从配置中读取)
     if (typeof USAGE_GUIDE !== 'undefined') {
         html += `
             <details>
@@ -73,7 +73,6 @@ class MahjongApp {
 
     init() {
         this.initTileUsage();
-        this.renderTileSelector();
         this.bindEvents();
         this.updateDisplay();
     }
@@ -84,66 +83,108 @@ class MahjongApp {
         }
     }
 
-    renderTileSelector() {
-        this.renderTileGroup('wanTiles', TILES_BY_TYPE.wan);
-        this.renderTileGroup('tiaoTiles', TILES_BY_TYPE.tiao);
-        this.renderTileGroup('bingTiles', TILES_BY_TYPE.bing);
-        this.renderTileGroup('windTiles', TILES_BY_TYPE.wind);
-        this.renderTileGroup('dragonTiles', TILES_BY_TYPE.dragon);
-    }
-
-    renderTileGroup(containerId, tileIds) {
+    // 渲染分类牌组（通用方法：用于选牌弹窗和副露弹窗） - 内联样式（标签与牌同行）
+    renderCategorizedTilesInline(containerId, tileGroups, options = {}) {
         const container = document.getElementById(containerId);
         if (!container) return;
 
-        container.innerHTML = tileIds.map(tileId => {
+        const { disabledCheck = null } = options;
+
+        const groupNames = {
+            wan: '萬',
+            tiao: '條',
+            bing: '餅',
+            wind: '風',
+            dragon: '箭'
+        };
+
+        let html = '';
+        for (const [groupType, tileIds] of Object.entries(tileGroups)) {
+            html += `<div class="tile-row-inline">`;
+            html += `<span class="tile-group-label">${groupNames[groupType] || groupType}</span>`;
+            html += `<div class="tile-row-items">`;
+            for (const tileId of tileIds) {
+                const tile = TILES[tileId];
+                const remaining = this.maxTileCount - this.tileUsage[tileId];
+                let isDisabled = remaining === 0;
+                if (disabledCheck && typeof disabledCheck === 'function') {
+                    isDisabled = disabledCheck(tileId, remaining);
+                }
+                html += `
+                    <div class="tile-btn ${isDisabled ? 'disabled' : ''}" data-tile="${tileId}">
+                        <span class="tile-char">${tile.unicode}</span>
+                        <span class="tile-count">${remaining}</span>
+                    </div>
+                `;
+            }
+            html += `</div></div>`;
+        }
+
+        container.innerHTML = html;
+    }
+
+    // 渲染手牌预览区（与主UI手牌样式一致）
+    renderHandPreview() {
+        const container = document.getElementById('selectedHandTiles');
+        const previewBox = document.getElementById('selectedHandPreview');
+        if (!container || !previewBox) return;
+
+        const totalTiles = this.hand.length + this.melds.reduce((sum, m) => sum + m.tiles.length, 0);
+        if (this.hand.length === 0) {
+            previewBox.classList.add('empty');
+            container.innerHTML = '<span class="preview-empty">未选择</span>';
+            return;
+        }
+        previewBox.classList.remove('empty');
+
+        const indexedHand = this.hand.map((tileId, index) => ({ tileId, originalIndex: index }));
+        indexedHand.sort((a, b) => {
+            const tileA = TILES[a.tileId];
+            const tileB = TILES[b.tileId];
+            const typeOrder = { wan: 0, tiao: 1, bing: 2, wind: 3, dragon: 4 };
+            if (tileA.type !== tileB.type) return typeOrder[tileA.type] - typeOrder[tileB.type];
+            if (typeof tileA.value === 'number' && typeof tileB.value === 'number') return tileA.value - tileB.value;
+            return 0;
+        });
+
+        container.innerHTML = indexedHand.map(({ tileId, originalIndex }) => {
             const tile = TILES[tileId];
-            const remaining = this.maxTileCount - this.tileUsage[tileId];
+            const isWinTile = originalIndex === this.winTileIndex;
             return `
-                <div class="tile-btn ${remaining === 0 ? 'disabled' : ''}" data-tile="${tileId}">
+                <div class="hand-tile preview-hand-tile ${isWinTile ? 'win-tile-highlight' : ''}" data-hand-index="${originalIndex}" title="点击移除 ${tile.name}">
                     <span class="tile-char">${tile.unicode}</span>
-                    <span class="tile-name">${tile.name}</span>
-                    <span class="tile-count">${remaining}</span>
+                    ${isWinTile ? '<span class="win-marker">和</span>' : ''}
+                </div>
+            `;
+        }).join('');
+    }
+
+    // 渲染副露预览区（点击可移除）
+    renderMeldPreview() {
+        const container = document.getElementById('selectedMeldTiles');
+        const previewBox = document.getElementById('selectedMeldPreview');
+        if (!container || !previewBox) return;
+
+        const tiles = this.meldModal.selectedTiles;
+        if (tiles.length === 0) {
+            previewBox.classList.add('empty');
+            container.innerHTML = '<span class="preview-empty">未选择</span>';
+            return;
+        }
+        previewBox.classList.remove('empty');
+
+        container.innerHTML = tiles.map((tileId, idx) => {
+            const tile = TILES[tileId];
+            return `
+                <div class="hand-tile preview-hand-tile" data-meld-selection-index="${idx}" title="点击移除 ${tile.name}">
+                    <span class="tile-char">${tile.unicode}</span>
                 </div>
             `;
         }).join('');
     }
 
     bindEvents() {
-        document.querySelectorAll('.tiles-row').forEach(row => {
-            row.addEventListener('click', (e) => {
-                const tileBtn = e.target.closest('.tile-btn');
-                if (tileBtn && !tileBtn.classList.contains('disabled')) {
-                    this.addTileToHand(tileBtn.dataset.tile);
-                }
-            });
-        });
-
-        document.getElementById('clearHand')?.addEventListener('click', () => this.clearHand());
-        document.getElementById('undoTile')?.addEventListener('click', () => this.undoLastTile());
-
-        document.getElementById('addChi')?.addEventListener('click', () => this.openMeldModal('chi'));
-        document.getElementById('addPong')?.addEventListener('click', () => this.openMeldModal('pong'));
-        document.getElementById('addMingGang')?.addEventListener('click', () => this.openMeldModal('minggang'));
-        document.getElementById('addAnGang')?.addEventListener('click', () => this.openMeldModal('angang'));
-        document.getElementById('clearMelds')?.addEventListener('click', () => this.clearMelds());
-
-        document.getElementById('modalClose')?.addEventListener('click', () => this.closeMeldModal());
-        document.getElementById('modalCancel')?.addEventListener('click', () => this.closeMeldModal());
-        document.getElementById('modalConfirm')?.addEventListener('click', () => this.confirmMeld());
-        document.getElementById('modalTiles')?.addEventListener('click', (e) => {
-            const tileBtn = e.target.closest('.tile-btn');
-            if (tileBtn && !tileBtn.classList.contains('disabled')) {
-                this.selectMeldTile(tileBtn.dataset.tile);
-            }
-        });
-
-        document.getElementById('calculateBtn')?.addEventListener('click', () => this.calculate());
-
-        document.querySelectorAll('.conditions-section select, .conditions-section input').forEach(el => {
-            el.addEventListener('change', () => this.updateConditions());
-        });
-
+        // 手牌展示区域：点击背景添加牌，点击单牌移除/选为和牌
         document.getElementById('handDisplay')?.addEventListener('click', (e) => {
             const tileEl = e.target.closest('.hand-tile');
             if (tileEl) {
@@ -153,13 +194,112 @@ class MahjongApp {
                 } else {
                     this.removeTileFromHand(index);
                 }
+            } else {
+                if (!this.selectingWinTile) {
+                    this.openTileSelectorModal();
+                }
             }
         });
 
+        document.getElementById('clearHand')?.addEventListener('click', () => this.clearHand());
+        document.getElementById('undoTile')?.addEventListener('click', () => this.undoLastTile());
+
+        // 副露按钮
+        document.getElementById('addChi')?.addEventListener('click', () => this.openMeldModal('chi'));
+        document.getElementById('addPong')?.addEventListener('click', () => this.openMeldModal('pong'));
+        document.getElementById('addMingGang')?.addEventListener('click', () => this.openMeldModal('minggang'));
+        document.getElementById('addAnGang')?.addEventListener('click', () => this.openMeldModal('angang'));
+        document.getElementById('clearMelds')?.addEventListener('click', () => this.clearMelds());
+
+        // ========== 通用选牌弹窗事件 ==========
+        document.getElementById('tileSelectorClose')?.addEventListener('click', () => this.closeTileSelectorModal());
+        document.getElementById('tileSelectorDone')?.addEventListener('click', () => this.closeTileSelectorModal());
+        document.getElementById('tileSelectorCancel')?.addEventListener('click', () => {
+            this.clearHand();
+            this.refreshTileSelector();
+        });
+
+        // 选牌弹窗：点击牌添加
+        document.getElementById('selectorTiles')?.addEventListener('click', (e) => {
+            const tileBtn = e.target.closest('.tile-btn');
+            if (tileBtn && !tileBtn.classList.contains('disabled')) {
+                this.addTileToHand(tileBtn.dataset.tile);
+                this.refreshTileSelector();
+            }
+        });
+
+        // 选牌弹窗：点击预览区手牌移除
+        document.getElementById('selectedHandTiles')?.addEventListener('click', (e) => {
+            const tileEl = e.target.closest('.preview-hand-tile');
+            if (tileEl) {
+                const index = parseInt(tileEl.dataset.handIndex);
+                if (!isNaN(index)) {
+                    this.removeTileFromHand(index);
+                    this.refreshTileSelector();
+                }
+            }
+        });
+
+        // ========== 副露弹窗事件 ==========
+        document.getElementById('modalClose')?.addEventListener('click', () => this.closeMeldModal());
+        document.getElementById('modalCancel')?.addEventListener('click', () => this.closeMeldModal());
+        document.getElementById('modalConfirm')?.addEventListener('click', () => this.confirmMeld());
+
+        // 副露弹窗：点击牌选择
+        document.getElementById('modalTiles')?.addEventListener('click', (e) => {
+            const tileBtn = e.target.closest('.tile-btn');
+            if (tileBtn && !tileBtn.classList.contains('disabled')) {
+                this.selectMeldTile(tileBtn.dataset.tile);
+            }
+        });
+
+        // 副露弹窗：点击预览区移除
+        document.getElementById('selectedMeldTiles')?.addEventListener('click', (e) => {
+            const tileEl = e.target.closest('.preview-hand-tile');
+            if (tileEl) {
+                const idx = parseInt(tileEl.dataset.meldSelectionIndex);
+                if (!isNaN(idx)) {
+                    this.removeMeldSelectedTile(idx);
+                }
+            }
+        });
+
+        document.getElementById('calculateBtn')?.addEventListener('click', () => this.calculate());
+
+        // 和牌条件变化
+        document.querySelectorAll('.conditions-section select, .conditions-section input').forEach(el => {
+            el.addEventListener('change', () => this.updateConditions());
+        });
+
+        // 和牌选择
         document.getElementById('selectWinTile')?.addEventListener('click', () => this.startWinTileSelection());
         document.getElementById('clearWinTile')?.addEventListener('click', () => this.clearWinTile());
     }
 
+    // ============ 通用选牌弹窗 (添加手牌) ============
+    openTileSelectorModal() {
+        const totalTiles = this.hand.length + this.melds.reduce((sum, m) => sum + m.tiles.length, 0);
+        if (totalTiles >= 14) {
+            this.showMessage('手牌已满（最多14张）');
+            return;
+        }
+
+        const modal = document.getElementById('tileSelectorModal');
+        modal.classList.add('show');
+        this.refreshTileSelector();
+    }
+
+    refreshTileSelector() {
+        const tileGroups = { ...TILES_BY_TYPE };
+        this.renderCategorizedTilesInline('selectorTiles', tileGroups);
+        this.renderHandPreview();
+    }
+
+    closeTileSelectorModal() {
+        document.getElementById('tileSelectorModal').classList.remove('show');
+    }
+
+    // ============ 和牌选择 ============
     startWinTileSelection() {
         if (this.hand.length === 0) {
             this.showMessage('请先添加手牌');
@@ -208,10 +348,11 @@ class MahjongApp {
             const tile = TILES[this.winTile];
             container.innerHTML = `<span class="win-tile-char">${tile.unicode}</span><span class="win-tile-name">${tile.name}</span>`;
         } else {
-            container.innerHTML = '<span class="placeholder">点击此处选择和牌</span>';
+            container.innerHTML = '<span class="placeholder">未选择</span>';
         }
     }
 
+    // ============ 手牌操作 ============
     addTileToHand(tileId) {
         const totalTiles = this.hand.length + this.melds.reduce((sum, m) => sum + m.tiles.length, 0);
         if (totalTiles >= 14) {
@@ -274,6 +415,7 @@ class MahjongApp {
         this.updateDisplay();
     }
 
+    // ============ 副露弹窗 ============
     openMeldModal(type) {
         this.meldModal = { type, selectedTiles: [] };
         
@@ -284,42 +426,35 @@ class MahjongApp {
         const typeNames = { chi: '吃', pong: '碰', minggang: '明杠', angang: '暗杠' };
         title.textContent = `添加${typeNames[type]}`;
         
-        if (type === 'chi') instruction.textContent = '请依次选择3张连续的序数牌';
-        else if (type === 'pong') instruction.textContent = '请选择1张牌（自动组成3张）';
-        else instruction.textContent = '请选择1张牌（自动组成4张）';
+        if (type === 'chi') instruction.textContent = '请依次选择3张连续的序数牌（点击预览区可移除）';
+        else if (type === 'pong') instruction.textContent = '请选择1张牌（自动组成3张，点击预览区可移除）';
+        else instruction.textContent = '请选择1张牌（自动组成4张，点击预览区可移除）';
 
-        this.renderModalTiles();
+        this.renderMeldModalTiles();
+        this.renderMeldPreview();
         modal.classList.add('show');
     }
 
-    renderModalTiles() {
-        const container = document.getElementById('modalTiles');
-        const selectedContainer = document.getElementById('selectedMeldTiles');
-        
-        let availableTiles = [];
-        if (this.meldModal.type === 'chi') {
-            availableTiles = [...TILES_BY_TYPE.wan, ...TILES_BY_TYPE.tiao, ...TILES_BY_TYPE.bing];
+    renderMeldModalTiles() {
+        let tileGroups;
+        const { type } = this.meldModal;
+
+        if (type === 'chi') {
+            tileGroups = {
+                wan: TILES_BY_TYPE.wan,
+                tiao: TILES_BY_TYPE.tiao,
+                bing: TILES_BY_TYPE.bing
+            };
         } else {
-            availableTiles = Object.keys(TILES);
+            tileGroups = { ...TILES_BY_TYPE };
         }
 
-        container.innerHTML = availableTiles.map(tileId => {
-            const tile = TILES[tileId];
-            const neededCount = this.meldModal.type === 'chi' ? 1 : (this.meldModal.type === 'pong' ? 3 : 4);
-            const available = this.maxTileCount - this.tileUsage[tileId];
-            const isDisabled = available < (this.meldModal.type === 'chi' ? 1 : neededCount);
-            
-            return `
-                <div class="tile-btn modal-tile ${isDisabled ? 'disabled' : ''}" data-tile="${tileId}">
-                    <span class="tile-char">${tile.unicode}</span>
-                </div>
-            `;
-        }).join('');
+        const disabledCheck = (tileId, remaining) => {
+            const neededCount = type === 'chi' ? 1 : (type === 'pong' ? 3 : 4);
+            return remaining < neededCount;
+        };
 
-        selectedContainer.innerHTML = this.meldModal.selectedTiles.map(tileId => {
-            const tile = TILES[tileId];
-            return `<span class="selected-tile">${tile.unicode}</span>`;
-        }).join('');
+        this.renderCategorizedTilesInline('modalTiles', tileGroups, { disabledCheck });
     }
 
     selectMeldTile(tileId) {
@@ -341,12 +476,30 @@ class MahjongApp {
                         return;
                     }
                 }
+            } else {
+                this.showMessage('吃最多选3张牌');
+                return;
             }
         } else {
             this.meldModal.selectedTiles = [tileId];
         }
 
-        this.renderModalTiles();
+        this.renderMeldModalTiles();
+        this.renderMeldPreview();
+    }
+
+    // 副露预览区：点击移除指定索引的牌
+    removeMeldSelectedTile(index) {
+        const { type, selectedTiles } = this.meldModal;
+        if (index < 0 || index >= selectedTiles.length) return;
+
+        selectedTiles.splice(index, 1);
+        // 碰/杠只选1张的情况，直接清空
+        if (type !== 'chi') {
+            this.meldModal.selectedTiles = [];
+        }
+        this.renderMeldModalTiles();
+        this.renderMeldPreview();
     }
 
     confirmMeld() {
@@ -402,12 +555,29 @@ class MahjongApp {
         this.meldModal = { type: null, selectedTiles: [] };
     }
 
+    removeMeld(index) {
+        if (index >= 0 && index < this.melds.length) {
+            const meld = this.melds[index];
+            for (const tileId of meld.tiles) {
+                this.tileUsage[tileId]--;
+            }
+            this.melds.splice(index, 1);
+            this.updateDisplay();
+        }
+    }
+
+    // ============ 展示更新 ============
     updateDisplay() {
         this.updateHandDisplay();
         this.updateMeldsDisplay();
-        this.updateTileSelector();
         this.updateHandCount();
         this.updateWinTileDisplay();
+
+        // 如果选牌弹窗打开，同步刷新预览
+        const modal = document.getElementById('tileSelectorModal');
+        if (modal && modal.classList.contains('show')) {
+            this.refreshTileSelector();
+        }
     }
 
     updateHandDisplay() {
@@ -415,7 +585,7 @@ class MahjongApp {
         if (!container) return;
 
         if (this.hand.length === 0) {
-            container.innerHTML = '<p class="placeholder">点击下方麻将牌添加到手牌</p>';
+            container.innerHTML = '<p class="placeholder">点击选择麻将牌</p>';
             return;
         }
 
@@ -470,28 +640,6 @@ class MahjongApp {
         }).join('');
     }
 
-    removeMeld(index) {
-        if (index >= 0 && index < this.melds.length) {
-            const meld = this.melds[index];
-            for (const tileId of meld.tiles) {
-                this.tileUsage[tileId]--;
-            }
-            this.melds.splice(index, 1);
-            this.updateDisplay();
-        }
-    }
-
-    updateTileSelector() {
-        document.querySelectorAll('.tile-btn[data-tile]').forEach(btn => {
-            const tileId = btn.dataset.tile;
-            const remaining = this.maxTileCount - this.tileUsage[tileId];
-            const countEl = btn.querySelector('.tile-count');
-            
-            if (countEl) countEl.textContent = remaining;
-            btn.classList.toggle('disabled', remaining === 0);
-        });
-    }
-
     updateHandCount() {
         const countEl = document.getElementById('handCount');
         if (countEl) {
@@ -503,8 +651,9 @@ class MahjongApp {
     updateConditions() {}
 
     getConditions() {
+        const winTypeRadio = document.querySelector('input[name="winType"]:checked');
         return {
-            isSelfDrawn: document.getElementById('winType')?.value === 'zimo',
+            isSelfDrawn: winTypeRadio ? winTypeRadio.value === 'zimo' : false,
             prevalentWind: document.getElementById('prevalentWind')?.value || 'east',
             seatWind: document.getElementById('seatWind')?.value || 'east',
             flowerCount: parseInt(document.getElementById('flowerCount')?.value || '0'),
@@ -559,7 +708,7 @@ class MahjongApp {
         const sortedFans = [...result.fans].sort((a, b) => b.score - a.score);
         
         fansEl.innerHTML = sortedFans.map(fan => `
-            <span class="fan-tag">
+            <span class="fan-tag" title="${fan.desc || ''}">
                 ${fan.name}
                 <span class="fan-value">${fan.score}番</span>
             </span>

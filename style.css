@@ -160,6 +160,8 @@ section h2 .tile-count {
     color: #f39c12;
     font-size: 0.85rem;
     margin-top: 10px;
+    width: 100%;
+    text-align: center;
 }
 
 /* Hand Section */
@@ -179,11 +181,19 @@ section h2 .tile-count {
     justify-content: center;
     align-items: center;
     margin-bottom: 12px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.hand-display:hover {
+    border-color: var(--primary-color);
+    background: #fbfaf4;
 }
 
 .hand-display .placeholder {
     color: var(--text-secondary);
     font-size: 0.9rem;
+    pointer-events: none;
 }
 
 .hand-tile {
@@ -195,6 +205,9 @@ section h2 .tile-count {
     border-radius: 6px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     transition: var(--transition);
+    position: relative;
+    line-height: 1;
+    user-select: none;
 }
 
 .hand-tile:hover {
@@ -203,10 +216,22 @@ section h2 .tile-count {
     background: #fff0f0;
 }
 
+/* Preview hand tile (in modals) - same as main UI */
+.preview-hand-tile {
+    cursor: pointer;
+}
+
+.preview-hand-tile:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    background: #fff0f0;
+}
+
 .hand-actions {
     display: flex;
     gap: 10px;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 .action-btn {
@@ -380,6 +405,47 @@ section h2 .tile-count {
     border-color: var(--primary-color);
 }
 
+/* Radio buttons for win type */
+.win-type-radio {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 0.9rem;
+    background: white;
+    flex: 1;
+    justify-content: center;
+    min-width: 60px;
+}
+
+.radio-label:hover {
+    border-color: var(--primary-light);
+}
+
+.radio-label input[type="radio"] {
+    margin: 0;
+    accent-color: var(--primary-color);
+    width: 16px;
+    height: 16px;
+}
+
+.radio-label:has(input[type="radio"]:checked) {
+    border-color: var(--primary-color);
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    font-weight: 600;
+    color: var(--primary-dark);
+}
+
 .special-conditions {
     display: flex;
     flex-wrap: wrap;
@@ -400,70 +466,75 @@ section h2 .tile-count {
     accent-color: var(--primary-color);
 }
 
-/* Tile Selector */
-.tile-selector {
-    background: linear-gradient(135deg, #fefefe 0%, #f9f9f6 100%);
-}
-
-.tile-group {
-    margin-bottom: 16px;
-}
-
-.tile-group:last-child {
-    margin-bottom: 0;
-}
-
-.tile-group h3 {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    margin-bottom: 8px;
-    padding-left: 4px;
-}
-
-.tiles-row {
+/* ============ Tile Selector - Inline row (label + tiles same line) ============ */
+.selector-tiles-inline {
     display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
 }
 
-.tile-btn {
+.tile-row-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+}
+
+.tile-group-label {
+    flex-shrink: 0;
+    width: 36px;
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    padding: 4px 0;
+    border-radius: 6px;
+}
+
+.tile-row-items {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.selector-tiles .tile-btn {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 8px;
-    min-width: 50px;
+    padding: 5px 4px;
+    min-width: 42px;
     background: linear-gradient(180deg, #fff 0%, #f0ebe0 100%);
     border: 2px solid var(--tile-border);
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
     transition: var(--transition);
     position: relative;
+    user-select: none;
 }
 
-.tile-btn:hover:not(.disabled) {
+.selector-tiles .tile-btn:hover:not(.disabled) {
     transform: translateY(-3px);
     box-shadow: var(--shadow-hover);
     border-color: var(--primary-color);
 }
 
-.tile-btn.disabled {
-    opacity: 0.4;
+.selector-tiles .tile-btn.disabled {
+    opacity: 0.35;
     cursor: not-allowed;
 }
 
-.tile-btn .tile-char {
-    font-size: 1.8rem;
+.selector-tiles .tile-btn .tile-char {
+    font-size: 1.7rem;
     line-height: 1;
 }
 
-.tile-btn .tile-name {
-    font-size: 0.7rem;
-    color: var(--text-secondary);
-    margin-top: 2px;
+.selector-tiles .tile-btn .tile-name {
+    display: none;
 }
 
-.tile-btn .tile-count {
+.selector-tiles .tile-btn .tile-count {
     position: absolute;
     top: -6px;
     right: -6px;
@@ -476,6 +547,49 @@ section h2 .tile-count {
     display: flex;
     align-items: center;
     justify-content: center;
+    font-weight: 600;
+}
+
+/* Selected preview area - shared by hand selector and meld selector */
+.selected-preview {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--tile-bg);
+    border: 2px solid var(--tile-border);
+    border-radius: 10px;
+    margin-bottom: 14px;
+    min-height: 62px;
+}
+
+.selected-preview.empty {
+    opacity: 0.7;
+}
+
+.selected-preview-label {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    padding: 0 4px;
+}
+
+.selected-preview-tiles {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+    min-height: 42px;
+}
+
+.preview-empty {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    padding: 4px 0;
 }
 
 /* Calculate Section */
@@ -546,7 +660,7 @@ section h2 .tile-count {
     color: var(--primary-color);
 }
 
-/* Modal */
+/* ============ Modal ============ */
 .modal {
     display: none;
     position: fixed;
@@ -558,6 +672,7 @@ section h2 .tile-count {
     z-index: 1000;
     align-items: center;
     justify-content: center;
+    padding: 12px;
 }
 
 .modal.show {
@@ -567,11 +682,18 @@ section h2 .tile-count {
 .modal-content {
     background: white;
     border-radius: 16px;
-    width: 90%;
-    max-width: 500px;
-    max-height: 80vh;
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
     overflow: hidden;
     animation: modalIn 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Wide modal - for hand tile selector (preview needs 14 tiles width) */
+.modal-content-wide {
+    max-width: 820px;
 }
 
 @keyframes modalIn {
@@ -589,13 +711,14 @@ section h2 .tile-count {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 20px;
+    padding: 14px 20px;
     background: var(--primary-color);
     color: white;
+    flex-shrink: 0;
 }
 
 .modal-header h3 {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
 }
 
 .modal-close {
@@ -613,64 +736,40 @@ section h2 .tile-count {
 }
 
 .modal-body {
-    padding: 20px;
-    max-height: 50vh;
+    padding: 16px 20px;
     overflow-y: auto;
+    flex: 1;
 }
 
-.modal-body p {
+/* No scroll body variant */
+.modal-body-no-scroll {
+    overflow: visible;
+}
+
+.modal-instruction {
     color: var(--text-secondary);
     margin-bottom: 12px;
-    font-size: 0.9rem;
-}
-
-.modal-tiles {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    justify-content: center;
-    margin-bottom: 16px;
-}
-
-.modal-tiles .tile-btn {
-    min-width: 44px;
-    padding: 6px;
-}
-
-.modal-tiles .tile-btn .tile-char {
-    font-size: 1.5rem;
-}
-
-.selected-meld-tiles {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    padding: 12px;
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 6px 10px;
     background: #f5f5f0;
-    border-radius: 8px;
-    min-height: 50px;
-}
-
-.selected-tile {
-    font-size: 2rem;
-    padding: 4px 8px;
-    background: linear-gradient(180deg, #fff 0%, #f0ebe0 100%);
-    border: 2px solid var(--primary-color);
     border-radius: 6px;
 }
 
 .modal-footer {
     display: flex;
     gap: 12px;
-    padding: 16px 20px;
+    padding: 12px 20px;
     border-top: 1px solid var(--border-color);
     justify-content: flex-end;
+    flex-shrink: 0;
+    background: #fafafa;
 }
 
 .modal-btn {
-    padding: 10px 24px;
+    padding: 8px 20px;
     border-radius: 8px;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     cursor: pointer;
     transition: var(--transition);
 }
@@ -689,6 +788,7 @@ section h2 .tile-count {
     background: var(--primary-color);
     border: none;
     color: white;
+    font-weight: 600;
 }
 
 .modal-btn.confirm:hover {
@@ -709,6 +809,8 @@ section h2 .tile-count {
     z-index: 2000;
     opacity: 0;
     transition: all 0.3s ease;
+    max-width: 90%;
+    text-align: center;
 }
 
 .toast-message.show {
@@ -746,6 +848,7 @@ footer {
     border: 2px solid #ffc107;
     border-radius: 10px;
     margin-bottom: 12px;
+    flex-wrap: wrap;
 }
 
 .win-tile-section label {
@@ -757,6 +860,7 @@ footer {
 
 .win-tile-display {
     flex: 1;
+    min-width: 100px;
     padding: 8px 16px;
     background: white;
     border: 2px solid var(--border-color);
@@ -850,7 +954,7 @@ footer {
     }
 }
 
-/* Responsive */
+/* ============ Responsive ============ */
 @media (max-width: 600px) {
     .container {
         padding: 10px;
@@ -881,17 +985,23 @@ footer {
         font-size: 1.5rem;
     }
 
-    .tile-btn {
-        min-width: 40px;
-        padding: 6px;
+    .selector-tiles .tile-btn {
+        min-width: 39px;
+        padding: 4px 3px;
     }
 
-    .tile-btn .tile-char {
-        font-size: 1.4rem;
+    .selector-tiles .tile-btn .tile-char {
+        font-size: 1.5rem;
     }
 
-    .tile-btn .tile-name {
-        display: none;
+    .tile-group-label {
+        width: 30px;
+        font-size: 0.85rem;
+        padding: 3px 0;
+    }
+
+    .tile-row-items {
+        gap: 4px;
     }
 
     .conditions-grid {
@@ -908,11 +1018,170 @@ footer {
     }
 
     .win-tile-section {
-        flex-wrap: wrap;
         gap: 8px;
     }
 
     .win-tile-section label {
         width: 100%;
+    }
+
+    .modal-content-wide {
+        max-width: 100%;
+    }
+
+    .modal-content {
+        max-width: 100%;
+        max-height: 96vh;
+    }
+
+    .modal-body {
+        padding: 10px 14px;
+    }
+
+    .modal-header {
+        padding: 12px 16px;
+    }
+
+    .modal-footer {
+        padding: 10px 16px;
+    }
+
+    .tile-row-inline {
+        gap: 6px;
+        padding: 3px 0;
+    }
+
+    .selected-preview {
+        padding: 8px 10px;
+        gap: 8px;
+    }
+}
+
+/* Landscape orientation (wider screen, short height) */
+@media (orientation: landscape) and (max-height: 700px) {
+    .container {
+        padding: 8px 20px;
+    }
+
+    header {
+        padding: 12px 20px;
+        margin-bottom: 12px;
+    }
+
+    header h1 {
+        font-size: 1.4rem;
+        margin-bottom: 0;
+    }
+
+    section {
+        padding: 12px 16px;
+        margin-bottom: 12px;
+    }
+
+    section h2 {
+        font-size: 1rem;
+        margin-bottom: 8px;
+    }
+
+    .total-score {
+        margin-bottom: 10px;
+    }
+
+    .total-score .score {
+        font-size: 2.2rem;
+    }
+
+    .hand-display {
+        min-height: 50px;
+        padding: 8px;
+        margin-bottom: 8px;
+    }
+
+    .hand-tile {
+        font-size: 1.7rem;
+        padding: 3px 5px;
+    }
+
+    .tile-row-inline {
+        gap: 6px;
+        padding: 2px 0;
+    }
+
+    .tile-group-label {
+        width: 32px;
+        font-size: 0.85rem;
+        padding: 3px 0;
+    }
+
+    .selector-tiles .tile-btn {
+        min-width: 40px;
+        padding: 4px 3px;
+    }
+
+    .selector-tiles .tile-btn .tile-char {
+        font-size: 1.5rem;
+    }
+
+    .tile-row-items {
+        gap: 4px;
+    }
+
+    .modal-content {
+        max-width: 780px;
+        max-height: 96vh;
+    }
+
+    .modal-content-wide {
+        max-width: 880px;
+    }
+
+    .modal-body {
+        padding: 10px 18px;
+    }
+
+    .modal-instruction {
+        margin-bottom: 8px;
+        padding: 4px 10px;
+        font-size: 0.8rem;
+    }
+
+    .selected-preview {
+        margin-bottom: 10px;
+        padding: 8px 12px;
+        min-height: 54px;
+    }
+
+    .selector-tiles-inline {
+        gap: 5px;
+    }
+
+    .conditions-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+
+    .win-tile-section {
+        padding: 8px 12px;
+        margin-bottom: 8px;
+    }
+
+    .win-type-radio {
+        gap: 8px;
+    }
+
+    .radio-label {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+
+    .selected-meld-tiles {
+        padding: 8px;
+        margin-top: 10px;
+        min-height: 40px;
+    }
+
+    .selected-tile {
+        font-size: 1.6rem;
     }
 }

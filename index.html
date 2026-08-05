@@ -35,7 +35,7 @@
             <section class="hand-section">
                 <h2>📋 当前手牌 <span class="tile-count">(<span id="handCount">0</span>/14)</span></h2>
                 <div class="hand-display" id="handDisplay">
-                    <p class="placeholder">点击下方麻将牌添加到手牌</p>
+                    <p class="placeholder">点击选择麻将牌</p>
                 </div>
                 <div class="win-tile-section">
                     <label>🎯 和牌:</label>
@@ -48,36 +48,6 @@
                 <div class="hand-actions">
                     <button class="action-btn clear-hand" id="clearHand">🗑️ 清空手牌</button>
                     <button class="action-btn undo-btn" id="undoTile">↩️ 撤销</button>
-                </div>
-            </section>
-
-            <!-- 选牌区域 -->
-            <section class="tile-selector">
-                <h2>🀄 选择麻将牌</h2>
-                
-                <div class="tile-group">
-                    <h3>万 (Characters)</h3>
-                    <div class="tiles-row" id="wanTiles"></div>
-                </div>
-                
-                <div class="tile-group">
-                    <h3>条 (Bamboo)</h3>
-                    <div class="tiles-row" id="tiaoTiles"></div>
-                </div>
-                
-                <div class="tile-group">
-                    <h3>饼 (Dots)</h3>
-                    <div class="tiles-row" id="bingTiles"></div>
-                </div>
-                
-                <div class="tile-group">
-                    <h3>风牌 (Winds)</h3>
-                    <div class="tiles-row" id="windTiles"></div>
-                </div>
-                
-                <div class="tile-group">
-                    <h3>箭牌 (Dragons)</h3>
-                    <div class="tiles-row" id="dragonTiles"></div>
                 </div>
             </section>
 
@@ -102,10 +72,16 @@
                 <div class="conditions-grid">
                     <div class="condition-item">
                         <label>和牌方式</label>
-                        <select id="winType">
-                            <option value="zimo">自摸</option>
-                            <option value="dianhe">点和</option>
-                        </select>
+                        <div class="win-type-radio">
+                            <label class="radio-label">
+                                <input type="radio" name="winType" value="dianhe" checked>
+                                <span>点和</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="winType" value="zimo">
+                                <span>自摸</span>
+                            </label>
+                        </div>
                     </div>
                     <div class="condition-item">
                         <label>圈风</label>
@@ -172,17 +148,42 @@
         </footer>
     </div>
 
+    <!-- 通用选牌弹窗 (用于添加手牌) -->
+    <div class="modal" id="tileSelectorModal">
+        <div class="modal-content modal-content-wide">
+            <div class="modal-header">
+                <h3 id="tileSelectorTitle">选择麻将牌</h3>
+                <button class="modal-close" id="tileSelectorClose">✕</button>
+            </div>
+            <div class="modal-body modal-body-no-scroll">
+                <p id="tileSelectorInstruction" class="modal-instruction">点击麻将牌添加，点击预览区牌移除</p>
+                <div class="selected-preview" id="selectedHandPreview">
+                    <span class="selected-preview-label">已选:</span>
+                    <div class="selected-preview-tiles" id="selectedHandTiles"></div>
+                </div>
+                <div class="selector-tiles selector-tiles-inline" id="selectorTiles"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" id="tileSelectorCancel">清空已选</button>
+                <button class="modal-btn confirm" id="tileSelectorDone">完成</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 副露输入弹窗 -->
     <div class="modal" id="meldModal">
-        <div class="modal-content">
+        <div class="modal-content modal-content-wide">
             <div class="modal-header">
                 <h3 id="modalTitle">添加副露</h3>
                 <button class="modal-close" id="modalClose">✕</button>
             </div>
-            <div class="modal-body">
-                <p id="modalInstruction">请选择牌</p>
-                <div class="modal-tiles" id="modalTiles"></div>
-                <div class="selected-meld-tiles" id="selectedMeldTiles"></div>
+            <div class="modal-body modal-body-no-scroll">
+                <p id="modalInstruction" class="modal-instruction">请选择牌</p>
+                <div class="selected-preview" id="selectedMeldPreview">
+                    <span class="selected-preview-label">已选:</span>
+                    <div class="selected-preview-tiles" id="selectedMeldTiles"></div>
+                </div>
+                <div class="selector-tiles selector-tiles-inline" id="modalTiles"></div>
             </div>
             <div class="modal-footer">
                 <button class="modal-btn cancel" id="modalCancel">取消</button>
