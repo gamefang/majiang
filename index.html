@@ -33,7 +33,10 @@
 
             <!-- 手牌显示区域 -->
             <section class="hand-section">
-                <h2>📋 当前手牌 <span class="tile-count">(<span id="handCount">0</span>/14)</span></h2>
+                <div class="section-title-row">
+                    <h2>📋 当前手牌 <span class="tile-count">(<span id="handCount">0</span>/14)</span></h2>
+                    <button class="section-title-btn clear-hand" id="clearHand" title="清空手牌">🗑️ 清空</button>
+                </div>
                 <div class="hand-display" id="handDisplay">
                     <p class="placeholder">点击选择麻将牌</p>
                 </div>
@@ -45,15 +48,14 @@
                     <button class="action-btn select-win" id="selectWinTile">选择和牌</button>
                     <button class="action-btn clear-win" id="clearWinTile">清除</button>
                 </div>
-                <div class="hand-actions">
-                    <button class="action-btn clear-hand" id="clearHand">🗑️ 清空手牌</button>
-                    <button class="action-btn undo-btn" id="undoTile">↩️ 撤销</button>
-                </div>
             </section>
 
             <!-- 副露区域 -->
             <section class="melds-section">
-                <h2>🔲 副露 (吃/碰/杠)</h2>
+                <div class="section-title-row">
+                    <h2>🔲 副露 (吃/碰/杠)</h2>
+                    <button class="section-title-btn clear-melds" id="clearMelds" title="清空副露">🗑️ 清空</button>
+                </div>
                 <div class="melds-display" id="meldsDisplay">
                     <p class="placeholder">点击下方按钮添加副露</p>
                 </div>
@@ -62,7 +64,6 @@
                     <button class="meld-btn" id="addPong">➕ 碰</button>
                     <button class="meld-btn" id="addMingGang">➕ 明杠</button>
                     <button class="meld-btn" id="addAnGang">➕ 暗杠</button>
-                    <button class="meld-btn clear-melds" id="clearMelds">🗑️ 清空副露</button>
                 </div>
             </section>
 
@@ -86,7 +87,7 @@
                     <div class="condition-item">
                         <label>圈风</label>
                         <select id="prevalentWind">
-                            <option value="east">无</option>
+                            <option value="none">无</option>
                             <option value="east">东</option>
                             <option value="south">南</option>
                             <option value="west">西</option>
@@ -96,7 +97,7 @@
                     <div class="condition-item">
                         <label>门风</label>
                         <select id="seatWind">
-                            <option value="east">无</option>
+                            <option value="none">无</option>
                             <option value="east">东</option>
                             <option value="south">南</option>
                             <option value="west">西</option>

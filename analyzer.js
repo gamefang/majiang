@@ -544,11 +544,17 @@ class MahjongAnalyzer {
 
         // 2番
         if (pongs.filter(s => TILES[s.tiles[0]]?.type === TILE_TYPES.DRAGON).length === 1) this.addFan(fans, 'jianke');
-        if (pongs.find(s => s.tiles[0] === this.conditions.prevalentWind)) this.addFan(fans, 'quanfengke');
         
-        const menFengKe = pongs.find(s => s.tiles[0] === this.conditions.seatWind);
-        const quanFengKe = pongs.find(s => s.tiles[0] === this.conditions.prevalentWind);
-        if (menFengKe && menFengKe !== quanFengKe) this.addFan(fans, 'menfengke');
+        let quanFengKe = null;
+        let menFengKe = null;
+        if (this.conditions.prevalentWind && this.conditions.prevalentWind !== 'none') {
+            quanFengKe = pongs.find(s => s.tiles[0] === this.conditions.prevalentWind);
+            if (quanFengKe) this.addFan(fans, 'quanfengke');
+        }
+        if (this.conditions.seatWind && this.conditions.seatWind !== 'none') {
+            menFengKe = pongs.find(s => s.tiles[0] === this.conditions.seatWind);
+            if (menFengKe && menFengKe !== quanFengKe) this.addFan(fans, 'menfengke');
+        }
 
         if (chis.length === 4 && isNumberTile(pair)) this.addFan(fans, 'pinghe');
         if (anPongs.length === 2) this.addFan(fans, 'shuanganke');

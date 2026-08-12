@@ -70,7 +70,7 @@ section {
 section h2 {
     color: var(--primary-color);
     font-size: 1.1rem;
-    margin-bottom: 12px;
+    margin-bottom: 0;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -80,6 +80,43 @@ section h2 .tile-count {
     font-size: 0.9rem;
     color: var(--text-secondary);
     font-weight: normal;
+}
+
+/* Section title row with action button on right */
+.section-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 12px;
+}
+
+.section-title-btn {
+    flex-shrink: 0;
+    padding: 5px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: var(--transition);
+    color: white;
+    font-weight: 500;
+}
+
+.section-title-btn.clear-hand {
+    background: #e74c3c;
+}
+
+.section-title-btn.clear-hand:hover {
+    background: #c0392b;
+}
+
+.section-title-btn.clear-melds {
+    background: #e74c3c;
+}
+
+.section-title-btn.clear-melds:hover {
+    background: #c0392b;
 }
 
 /* Result Panel */
@@ -142,6 +179,9 @@ section h2 .tile-count {
     border-radius: 16px;
     font-size: 0.85rem;
     animation: fadeIn 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    user-select: none;
 }
 
 .fan-tag .fan-value {
@@ -149,6 +189,46 @@ section h2 .tile-count {
     padding: 2px 6px;
     border-radius: 10px;
     font-size: 0.75rem;
+}
+
+/* Fan-tag click-to-show tooltip (for mobile) */
+.fan-tag-tip {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 8px);
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.88);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    white-space: normal;
+    width: max-content;
+    max-width: 280px;
+    line-height: 1.5;
+    z-index: 50;
+    pointer-events: none;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    animation: tipIn 0.2s ease;
+}
+
+.fan-tag-tip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.88);
+}
+
+.fan-tag-tip-active {
+    z-index: 10;
+}
+
+@keyframes tipIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(4px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
 .error-message {

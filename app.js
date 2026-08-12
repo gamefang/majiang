@@ -62,7 +62,8 @@ class MahjongApp {
         this.selectingWinTile = false;
         this.tileUsage = {};
         this.maxTileCount = 4;
-        
+        this.activeFanTooltip = null;
+
         this.meldModal = {
             type: null,
             selectedTiles: []
@@ -75,11 +76,49 @@ class MahjongApp {
         this.initTileUsage();
         this.bindEvents();
         this.updateDisplay();
+        this.bindGlobalTooltipEvents();
     }
 
     initTileUsage() {
         for (const tileId of Object.keys(TILES)) {
             this.tileUsage[tileId] = 0;
+        }
+    }
+
+    // 全局tooltip事件：点击页面其它地方关闭展开的番名tooltip
+    bindGlobalTooltipEvents() {
+        document.addEventListener('click', (e) => {
+            if (this.activeFanTooltip && !e.target.closest('.fan-tag')) {
+                this.closeFanTooltip();
+            }
+        });
+    }
+
+    // 关闭当前展开的番名tooltip
+    closeFanTooltip() {
+        if (this.activeFanTooltip) {
+            this.activeFanTooltip.classList.remove('fan-tag-tip-active');
+            const tip = this.activeFanTooltip.querySelector('.fan-tag-tip');
+            if (tip) tip.remove();
+            this.activeFanTooltip = null;
+        }
+    }
+
+    // 切换番名tooltip的显示（用于手机点击）
+    toggleFanTooltip(fanEl, desc) {
+        if (this.activeFanTooltip && this.activeFanTooltip !== fanEl) {
+            this.closeFanTooltip();
+        }
+
+        if (fanEl.classList.contains('fan-tag-tip-active')) {
+            this.closeFanTooltip();
+        } else {
+            const tip = document.createElement('div');
+            tip.className = 'fan-tag-tip';
+            tip.textContent = desc;
+            fanEl.appendChild(tip);
+            fanEl.classList.add('fan-tag-tip-active');
+            this.activeFanTooltip = fanEl;
         }
     }
 
@@ -129,7 +168,6 @@ class MahjongApp {
         const previewBox = document.getElementById('selectedHandPreview');
         if (!container || !previewBox) return;
 
-        const totalTiles = this.hand.length + this.melds.reduce((sum, m) => sum + m.tiles.length, 0);
         if (this.hand.length === 0) {
             previewBox.classList.add('empty');
             container.innerHTML = '<span class="preview-empty">未选择</span>';
@@ -202,7 +240,6 @@ class MahjongApp {
         });
 
         document.getElementById('clearHand')?.addEventListener('click', () => this.clearHand());
-        document.getElementById('undoTile')?.addEventListener('click', () => this.undoLastTile());
 
         // 副露按钮
         document.getElementById('addChi')?.addEventListener('click', () => this.openMeldModal('chi'));
@@ -383,14 +420,6 @@ class MahjongApp {
                 this.winTileIndex--;
             }
             
-            this.updateDisplay();
-        }
-    }
-
-    undoLastTile() {
-        if (this.hand.length > 0) {
-            const tileId = this.hand.pop();
-            this.tileUsage[tileId]--;
             this.updateDisplay();
         }
     }
@@ -625,9 +654,11 @@ class MahjongApp {
 
         container.innerHTML = this.melds.map((meld, meldIndex) => {
             const typeNames = { chi: '吃', pong: '碰', minggang: '明杠', angang: '暗杠' };
-            const tilesHtml = meld.tiles.map(tileId => {
+            const tilesHtml = meld.tiles.map((tileId, tileIdx) => {
                 const tile = TILES[tileId];
-                return `<span class="meld-tile ${meld.type === 'angang' ? 'face-down' : ''}">${tile.unicode}</span>`;
+                // 暗杠：第1张显示明牌，其余显示暗牌
+                const isFaceDown = meld.type === 'angang' && tileIdx > 0;
+                return `<span class="meld-tile ${isFaceDown ? 'face-down' : ''}">${tile.unicode}</span>`;
             }).join('');
             
             return `
@@ -654,8 +685,8 @@ class MahjongApp {
         const winTypeRadio = document.querySelector('input[name="winType"]:checked');
         return {
             isSelfDrawn: winTypeRadio ? winTypeRadio.value === 'zimo' : false,
-            prevalentWind: document.getElementById('prevalentWind')?.value || 'east',
-            seatWind: document.getElementById('seatWind')?.value || 'east',
+            prevalentWind: document.getElementById('prevalentWind')?.value || 'none',
+            seatWind: document.getElementById('seatWind')?.value || 'none',
             flowerCount: parseInt(document.getElementById('flowerCount')?.value || '0'),
             isLastTile: document.getElementById('isLastTile')?.checked || false,
             isKongDraw: document.getElementById('isKongDraw')?.checked || false,
@@ -680,7 +711,6 @@ class MahjongApp {
         analyzer.setHand(this.hand, this.melds, this.winTile, conditions);
         const result = analyzer.analyze();
         
-        // 计算最终总分
         result.totalScore = result.fans.reduce((sum, f) => sum + f.score, 0);
         
         this.showResult(result);
@@ -689,6 +719,9 @@ class MahjongApp {
     showResult(result) {
         const scoreEl = document.getElementById('totalScore');
         const fansEl = document.getElementById('detectedFans');
+
+        // 关闭之前展开的tooltip
+        this.closeFanTooltip();
 
         if (!result.valid) {
             scoreEl.textContent = '0';
@@ -708,11 +741,19 @@ class MahjongApp {
         const sortedFans = [...result.fans].sort((a, b) => b.score - a.score);
         
         fansEl.innerHTML = sortedFans.map(fan => `
-            <span class="fan-tag" title="${fan.desc || ''}">
+            <span class="fan-tag" data-desc="${fan.desc || ''}" title="${fan.desc || ''}">
                 ${fan.name}
                 <span class="fan-value">${fan.score}番</span>
             </span>
         `).join('');
+
+        // 为番名标签绑定点击事件（手机点击显示tooltip）
+        fansEl.querySelectorAll('.fan-tag').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleFanTooltip(el, el.dataset.desc);
+            });
+        });
 
         if (result.totalScore < 8) {
             fansEl.innerHTML += '<p class="warning-message">⚠️ 未满8番，不能和牌</p>';
