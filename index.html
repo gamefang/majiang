@@ -178,6 +178,12 @@
                     <span class="selected-preview-label">当前输入（单牌）:</span>
                     <div class="selected-preview-tiles" id="selectedMeldTiles"></div>
                 </div>
+                <div class="melds-preview-groups" id="meldGroupsPreview">
+                    <div class="melds-preview-label">当前副露（点击选中/删除，杠可切明暗）：</div>
+                    <div class="melds-preview-list" id="meldGroupsPreviewList">
+                        <span class="preview-empty">暂无副露</span>
+                    </div>
+                </div>
                 <div class="gang-switcher" id="gangSwitcher" style="display:none;">
                     <span class="gang-switcher-label">选中杠类型：</span>
                     <label class="radio-label">
@@ -189,16 +195,11 @@
                         <span>暗杠</span>
                     </label>
                 </div>
-                <div class="melds-preview-groups" id="meldGroupsPreview">
-                    <div class="melds-preview-label">已识别组（点击选中/删除，杠可切明暗）：</div>
-                    <div class="melds-preview-list" id="meldGroupsPreviewList">
-                        <span class="preview-empty">暂无成组</span>
-                    </div>
-                </div>
+                <br/>
                 <div class="selector-tiles selector-tiles-inline" id="modalTiles"></div>
             </div>
             <div class="modal-footer">
-                <button class="modal-btn cancel" id="modalCancel">清空当前</button>
+                <button class="modal-btn cancel" id="modalCancel">清空輸入</button>
                 <button class="modal-btn confirm" id="modalConfirm">确认添加</button>
             </div>
         </div>

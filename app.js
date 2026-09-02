@@ -231,7 +231,7 @@ class MahjongApp {
 
         const { groups, selectedGroupIdx } = this.meldModal;
         if (groups.length === 0) {
-            listEl.innerHTML = '<span class="preview-empty">暂无成组</span>';
+            listEl.innerHTML = '<span class="preview-empty">暂无副露</span>';
             if (switcherEl) switcherEl.style.display = 'none';
             return;
         }
@@ -522,7 +522,7 @@ class MahjongApp {
     openMeldModal() {
         this.meldModal = {
             pendingTiles: [],
-            groups: [],
+            groups: JSON.parse(JSON.stringify(this.melds)), // 深拷貝主頁當前副露同步到彈窗
             selectedGroupIdx: -1
         };
 
@@ -545,12 +545,14 @@ class MahjongApp {
 
     renderMeldModalTiles() {
         const tileGroups = { ...TILES_BY_TYPE };
-        // 剩余数量 = max 4 - tileUsage (已提交到主状态) - groups中的牌占用 - pending中的占用
-        const usage = { ...this.tileUsage };
+        // 重新計算彈窗內剩餘可用牌數：4 - 手牌佔用 - 彈窗內副露組佔用 - 當前輸入單牌佔用
+        const usage = {};
+        for (const tileId of Object.keys(TILES)) usage[tileId] = 0;
+        for (const t of this.hand) usage[t]++;
         for (const g of this.meldModal.groups) {
-            for (const t of g.tiles) usage[t] = (usage[t] || 0) + 1;
+            for (const t of g.tiles) usage[t]++;
         }
-        for (const t of this.meldModal.pendingTiles) usage[t] = (usage[t] || 0) + 1;
+        for (const t of this.meldModal.pendingTiles) usage[t]++;
 
         const container = document.getElementById('modalTiles');
         if (!container) return;
@@ -670,8 +672,6 @@ class MahjongApp {
     removeMeldGroup(idx) {
         const g = this.meldModal.groups[idx];
         if (!g) return;
-        // 把该组牌退回给 pendingTiles（用户可继续重新组合）
-        for (const t of g.tiles) this.meldModal.pendingTiles.push(t);
         this.meldModal.groups.splice(idx, 1);
         if (this.meldModal.selectedGroupIdx === idx) this.meldModal.selectedGroupIdx = -1;
         else if (this.meldModal.selectedGroupIdx > idx) this.meldModal.selectedGroupIdx--;
@@ -690,30 +690,37 @@ class MahjongApp {
     }
 
     confirmMeld() {
-        // 最终确认前强制扫描一次（把尾部剩余的3同/吃/4同也识别掉；碰在forceFinal下才会被3张触发）
+        // 最終確認前強制掃描一次
         this.scanAndGroupPending(true);
 
         const { groups } = this.meldModal;
-        if (groups.length === 0) {
-            this.showMessage('没有可添加的成组副露（吃/碰/杠至少3张连续或相同）');
-            return;
-        }
-        // 校验每组牌可用数量
-        const totalNeed = {};
+
+        // 校驗牌數上限：手牌 + 彈窗副露組 <= 4
+        const handUsage = {};
+        for (const t of this.hand) handUsage[t] = (handUsage[t] || 0) + 1;
+
+        const totalNeed = { ...handUsage };
         for (const g of groups) {
             for (const t of g.tiles) totalNeed[t] = (totalNeed[t] || 0) + 1;
         }
+
         for (const [t, n] of Object.entries(totalNeed)) {
-            if ((this.tileUsage[t] || 0) + n > this.maxTileCount) {
-                this.showMessage(`${TILES[t]?.name || t} 数量不足（需要${n}张，但只剩${this.maxTileCount - (this.tileUsage[t] || 0)}张）`);
+            if (n > this.maxTileCount) {
+                this.showMessage(`${TILES[t]?.name || t} 數量不足（手牌與副露合計需要${n}張，超過上限4張）`);
                 return;
             }
         }
-        // 全部通过 - 提交
-        for (const g of groups) {
-            this.melds.push({ ...g, tiles: [...g.tiles] });
+
+        // 全部通過 - 將彈窗中的副露同步保存到主頁的 melds 中
+        this.melds = JSON.parse(JSON.stringify(groups));
+
+        // 重新計算並更新全局牌數使用量
+        this.initTileUsage();
+        for (const t of this.hand) this.tileUsage[t]++;
+        for (const g of this.melds) {
             for (const t of g.tiles) this.tileUsage[t]++;
         }
+
         this.closeMeldModal();
         this.updateDisplay();
     }
@@ -808,7 +815,7 @@ class MahjongApp {
                 <div class="meld-group" data-meld-index="${meldIndex}">
                     <div class="meld-tiles">${tilesHtml}</div>
                     <div class="meld-label">${typeNames[meld.type]}</div>
-                    <button class="meld-remove" onclick="app.removeMeld(${meldIndex})">✕</button>
+                    <button class="meld-remove" onclick="event.stopPropagation(); app.removeMeld(${meldIndex})">✕</button>
                 </div>
             `;
         }).join('');
