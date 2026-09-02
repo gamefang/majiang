@@ -56,14 +56,8 @@
                     <h2>🔲 副露 (吃/碰/杠)</h2>
                     <button class="section-title-btn clear-melds" id="clearMelds" title="清空副露">🗑️ 清空</button>
                 </div>
-                <div class="melds-display" id="meldsDisplay">
-                    <p class="placeholder">点击下方按钮添加副露</p>
-                </div>
-                <div class="meld-actions">
-                    <button class="meld-btn" id="addChi">➕ 吃</button>
-                    <button class="meld-btn" id="addPong">➕ 碰</button>
-                    <button class="meld-btn" id="addMingGang">➕ 明杠</button>
-                    <button class="meld-btn" id="addAnGang">➕ 暗杠</button>
+                <div class="melds-display" id="meldsDisplay" title="点击添加副露">
+                    <p class="placeholder">点击选择副露（吃/碰/杠）</p>
                 </div>
             </section>
 
@@ -171,24 +165,41 @@
         </div>
     </div>
 
-    <!-- 副露输入弹窗 -->
+    <!-- 副露输入弹窗（自动成组模式） -->
     <div class="modal" id="meldModal">
         <div class="modal-content modal-content-wide">
             <div class="modal-header">
-                <h3 id="modalTitle">添加副露</h3>
+                <h3 id="modalTitle">添加副露（自动成组）</h3>
                 <button class="modal-close" id="modalClose">✕</button>
             </div>
-            <div class="modal-body modal-body-no-scroll">
-                <p id="modalInstruction" class="modal-instruction">请选择牌</p>
+            <div class="modal-body modal-body-scroll">
+                <p id="modalInstruction" class="modal-instruction">3张顺子直接成「吃」；3张相同成「碰」；4张相同成「杠」，杠选中后可切明/暗</p>
                 <div class="selected-preview" id="selectedMeldPreview">
-                    <span class="selected-preview-label">已选:</span>
+                    <span class="selected-preview-label">当前输入（单牌）:</span>
                     <div class="selected-preview-tiles" id="selectedMeldTiles"></div>
+                </div>
+                <div class="gang-switcher" id="gangSwitcher" style="display:none;">
+                    <span class="gang-switcher-label">选中杠类型：</span>
+                    <label class="radio-label">
+                        <input type="radio" name="gangType" value="minggang" id="gangMingRadio">
+                        <span>明杠</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="gangType" value="angang" id="gangAnRadio">
+                        <span>暗杠</span>
+                    </label>
+                </div>
+                <div class="melds-preview-groups" id="meldGroupsPreview">
+                    <div class="melds-preview-label">已识别组（点击选中/删除，杠可切明暗）：</div>
+                    <div class="melds-preview-list" id="meldGroupsPreviewList">
+                        <span class="preview-empty">暂无成组</span>
+                    </div>
                 </div>
                 <div class="selector-tiles selector-tiles-inline" id="modalTiles"></div>
             </div>
             <div class="modal-footer">
-                <button class="modal-btn cancel" id="modalCancel">取消</button>
-                <button class="modal-btn confirm" id="modalConfirm">确认</button>
+                <button class="modal-btn cancel" id="modalCancel">清空当前</button>
+                <button class="modal-btn confirm" id="modalConfirm">确认添加</button>
             </div>
         </div>
     </div>

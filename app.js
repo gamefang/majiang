@@ -65,8 +65,9 @@ class MahjongApp {
         this.activeFanTooltip = null;
 
         this.meldModal = {
-            type: null,
-            selectedTiles: []
+            pendingTiles: [],   // 尚未成组的单牌（用户当前正在输入）
+            groups: [],         // 已识别的 meld 组 { type, tiles }
+            selectedGroupIdx: -1 // 当前选中的组 (用于切换杠类型)
         };
 
         this.init();
@@ -197,20 +198,19 @@ class MahjongApp {
         }).join('');
     }
 
-    // 渲染副露预览区（点击可移除）
+    // 渲染副露弹窗：当前尚未成组的输入单牌预览
     renderMeldPreview() {
         const container = document.getElementById('selectedMeldTiles');
         const previewBox = document.getElementById('selectedMeldPreview');
         if (!container || !previewBox) return;
 
-        const tiles = this.meldModal.selectedTiles;
+        const tiles = this.meldModal.pendingTiles;
         if (tiles.length === 0) {
             previewBox.classList.add('empty');
             container.innerHTML = '<span class="preview-empty">未选择</span>';
             return;
         }
         previewBox.classList.remove('empty');
-
         container.innerHTML = tiles.map((tileId, idx) => {
             const tile = TILES[tileId];
             return `
@@ -219,6 +219,51 @@ class MahjongApp {
                 </div>
             `;
         }).join('');
+    }
+
+    // 渲染副露弹窗：已识别成组的预览区 + 选中态 + 杠切换
+    renderMeldGroupsPreview() {
+        const listEl = document.getElementById('meldGroupsPreviewList');
+        const switcherEl = document.getElementById('gangSwitcher');
+        const gangMingRadio = document.getElementById('gangMingRadio');
+        const gangAnRadio = document.getElementById('gangAnRadio');
+        if (!listEl) return;
+
+        const { groups, selectedGroupIdx } = this.meldModal;
+        if (groups.length === 0) {
+            listEl.innerHTML = '<span class="preview-empty">暂无成组</span>';
+            if (switcherEl) switcherEl.style.display = 'none';
+            return;
+        }
+
+        const typeNames = { chi: '吃', pong: '碰', minggang: '明杠', angang: '暗杠' };
+        listEl.innerHTML = groups.map((g, gIdx) => {
+            const selectedClass = gIdx === selectedGroupIdx ? 'selected' : '';
+            const tilesHtml = g.tiles.map((tileId, tileIdx) => {
+                const tile = TILES[tileId];
+                const isFaceDown = g.type === 'angang' && tileIdx > 0;
+                return `<span class="preview-meld-tile ${isFaceDown ? 'face-down' : ''}">${isFaceDown ? '' : tile.unicode}</span>`;
+            }).join('');
+            return `
+                <div class="preview-meld-group ${selectedClass}" data-group-idx="${gIdx}">
+                    <div class="preview-meld-tiles">${tilesHtml}</div>
+                    <div class="preview-meld-label">${typeNames[g.type] || g.type}</div>
+                    <button class="preview-meld-remove" data-group-remove="${gIdx}" title="删除该组">✕</button>
+                </div>
+            `;
+        }).join('');
+
+        // 选中态是一个杠 => 显示切换按钮
+        if (switcherEl) {
+            const selG = groups[selectedGroupIdx];
+            if (selG && (selG.type === 'minggang' || selG.type === 'angang')) {
+                switcherEl.style.display = 'flex';
+                if (gangMingRadio) gangMingRadio.checked = selG.type === 'minggang';
+                if (gangAnRadio) gangAnRadio.checked = selG.type === 'angang';
+            } else {
+                switcherEl.style.display = 'none';
+            }
+        }
     }
 
     bindEvents() {
@@ -241,12 +286,12 @@ class MahjongApp {
 
         document.getElementById('clearHand')?.addEventListener('click', () => this.clearHand());
 
-        // 副露按钮
-        document.getElementById('addChi')?.addEventListener('click', () => this.openMeldModal('chi'));
-        document.getElementById('addPong')?.addEventListener('click', () => this.openMeldModal('pong'));
-        document.getElementById('addMingGang')?.addEventListener('click', () => this.openMeldModal('minggang'));
-        document.getElementById('addAnGang')?.addEventListener('click', () => this.openMeldModal('angang'));
-        document.getElementById('clearMelds')?.addEventListener('click', () => this.clearMelds());
+        // 副露展示区点击 => 打开副露弹窗（替代原来的按钮）
+        document.getElementById('meldsDisplay')?.addEventListener('click', () => this.openMeldModal());
+        document.getElementById('clearMelds')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.clearMelds();
+        });
 
         // ========== 通用选牌弹窗事件 ==========
         document.getElementById('tileSelectorClose')?.addEventListener('click', () => this.closeTileSelectorModal());
@@ -279,7 +324,10 @@ class MahjongApp {
 
         // ========== 副露弹窗事件 ==========
         document.getElementById('modalClose')?.addEventListener('click', () => this.closeMeldModal());
-        document.getElementById('modalCancel')?.addEventListener('click', () => this.closeMeldModal());
+        // Cancel = 清空当前 pending tiles
+        document.getElementById('modalCancel')?.addEventListener('click', () => {
+            this.resetMeldModalPending();
+        });
         document.getElementById('modalConfirm')?.addEventListener('click', () => this.confirmMeld());
 
         // 副露弹窗：点击牌选择
@@ -290,7 +338,7 @@ class MahjongApp {
             }
         });
 
-        // 副露弹窗：点击预览区移除
+        // 副露弹窗：点击预览区（pending）移除单牌
         document.getElementById('selectedMeldTiles')?.addEventListener('click', (e) => {
             const tileEl = e.target.closest('.preview-hand-tile');
             if (tileEl) {
@@ -300,6 +348,32 @@ class MahjongApp {
                 }
             }
         });
+
+        // 副露弹窗：点击 groups 预览 - 选中组 / 删除组
+        document.getElementById('meldGroupsPreviewList')?.addEventListener('click', (e) => {
+            const removeBtn = e.target.closest('[data-group-remove]');
+            if (removeBtn) {
+                e.stopPropagation();
+                const idx = parseInt(removeBtn.dataset.groupRemove);
+                if (!isNaN(idx)) this.removeMeldGroup(idx);
+                return;
+            }
+            const grp = e.target.closest('.preview-meld-group');
+            if (grp) {
+                const idx = parseInt(grp.dataset.groupIdx);
+                if (!isNaN(idx)) this.toggleSelectMeldGroup(idx);
+            }
+        });
+
+        // 副露弹窗：杠类型单选切换
+        const gangSwitcher = document.getElementById('gangSwitcher');
+        if (gangSwitcher) {
+            gangSwitcher.addEventListener('change', (e) => {
+                if (e.target?.name === 'gangType') {
+                    this.setGangType(e.target.value);
+                }
+            });
+        }
 
         document.getElementById('calculateBtn')?.addEventListener('click', () => this.calculate());
 
@@ -315,9 +389,9 @@ class MahjongApp {
 
     // ============ 通用选牌弹窗 (添加手牌) ============
     openTileSelectorModal() {
-        const totalTiles = this.hand.length + this.melds.reduce((sum, m) => sum + m.tiles.length, 0);
-        if (totalTiles >= 14) {
-            this.showMessage('手牌已满（最多14张）');
+        const totalTiles = this.getTotalTiles();
+        if (totalTiles >= this.getExpectedTotalTiles()) {
+            this.showMessage('手牌已满');
             return;
         }
 
@@ -391,9 +465,9 @@ class MahjongApp {
 
     // ============ 手牌操作 ============
     addTileToHand(tileId) {
-        const totalTiles = this.hand.length + this.melds.reduce((sum, m) => sum + m.tiles.length, 0);
-        if (totalTiles >= 14) {
-            this.showMessage('手牌已满（最多14张）');
+        const totalTiles = this.getTotalTiles();
+        if (totalTiles >= this.getExpectedTotalTiles()) {
+            this.showMessage('手牌已满');
             return;
         }
 
@@ -444,144 +518,213 @@ class MahjongApp {
         this.updateDisplay();
     }
 
-    // ============ 副露弹窗 ============
-    openMeldModal(type) {
-        this.meldModal = { type, selectedTiles: [] };
-        
-        const modal = document.getElementById('meldModal');
-        const title = document.getElementById('modalTitle');
-        const instruction = document.getElementById('modalInstruction');
-        
-        const typeNames = { chi: '吃', pong: '碰', minggang: '明杠', angang: '暗杠' };
-        title.textContent = `添加${typeNames[type]}`;
-        
-        if (type === 'chi') instruction.textContent = '请依次选择3张连续的序数牌（点击预览区可移除）';
-        else if (type === 'pong') instruction.textContent = '请选择1张牌（自动组成3张，点击预览区可移除）';
-        else instruction.textContent = '请选择1张牌（自动组成4张，点击预览区可移除）';
+    // ============ 副露弹窗（自动成组模式）============
+    openMeldModal() {
+        this.meldModal = {
+            pendingTiles: [],
+            groups: [],
+            selectedGroupIdx: -1
+        };
 
+        const modal = document.getElementById('meldModal');
+        modal.classList.add('show');
+        this.refreshMeldModal();
+    }
+
+    resetMeldModalPending() {
+        this.meldModal.pendingTiles = [];
+        this.meldModal.selectedGroupIdx = -1;
+        this.refreshMeldModal();
+    }
+
+    refreshMeldModal() {
         this.renderMeldModalTiles();
         this.renderMeldPreview();
-        modal.classList.add('show');
+        this.renderMeldGroupsPreview();
     }
 
     renderMeldModalTiles() {
-        let tileGroups;
-        const { type } = this.meldModal;
-
-        if (type === 'chi') {
-            tileGroups = {
-                wan: TILES_BY_TYPE.wan,
-                tiao: TILES_BY_TYPE.tiao,
-                bing: TILES_BY_TYPE.bing
-            };
-        } else {
-            tileGroups = { ...TILES_BY_TYPE };
+        const tileGroups = { ...TILES_BY_TYPE };
+        // 剩余数量 = max 4 - tileUsage (已提交到主状态) - groups中的牌占用 - pending中的占用
+        const usage = { ...this.tileUsage };
+        for (const g of this.meldModal.groups) {
+            for (const t of g.tiles) usage[t] = (usage[t] || 0) + 1;
         }
+        for (const t of this.meldModal.pendingTiles) usage[t] = (usage[t] || 0) + 1;
 
-        const disabledCheck = (tileId, remaining) => {
-            const neededCount = type === 'chi' ? 1 : (type === 'pong' ? 3 : 4);
-            return remaining < neededCount;
-        };
+        const container = document.getElementById('modalTiles');
+        if (!container) return;
 
-        this.renderCategorizedTilesInline('modalTiles', tileGroups, { disabledCheck });
+        const groupNames = { wan: '萬', tiao: '條', bing: '餅', wind: '風', dragon: '箭' };
+        let html = '';
+        for (const [groupType, tileIds] of Object.entries(tileGroups)) {
+            html += `<div class="tile-row-inline">`;
+            html += `<span class="tile-group-label">${groupNames[groupType] || groupType}</span>`;
+            html += `<div class="tile-row-items">`;
+            for (const tileId of tileIds) {
+                const tile = TILES[tileId];
+                const remaining = this.maxTileCount - (usage[tileId] || 0);
+                const disabled = remaining <= 0;
+                html += `
+                    <div class="tile-btn ${disabled ? 'disabled' : ''}" data-tile="${tileId}">
+                        <span class="tile-char">${tile.unicode}</span>
+                        <span class="tile-count">${remaining}</span>
+                    </div>
+                `;
+            }
+            html += `</div></div>`;
+        }
+        container.innerHTML = html;
     }
 
     selectMeldTile(tileId) {
-        const { type, selectedTiles } = this.meldModal;
-        
-        if (type === 'chi') {
-            if (selectedTiles.length < 3) {
-                if (selectedTiles.length === 0) {
-                    selectedTiles.push(tileId);
-                } else {
-                    const firstTile = TILES[selectedTiles[0]];
-                    const newTile = TILES[tileId];
-                    
-                    if (firstTile.type === newTile.type && isNumberTile(tileId)) {
-                        selectedTiles.push(tileId);
-                        selectedTiles.sort((a, b) => TILES[a].value - TILES[b].value);
-                    } else {
-                        this.showMessage('吃必须是同花色的序数牌');
-                        return;
-                    }
-                }
-            } else {
-                this.showMessage('吃最多选3张牌');
-                return;
-            }
-        } else {
-            this.meldModal.selectedTiles = [tileId];
+        if (this.meldModal.pendingTiles.length >= 16) {
+            this.showMessage('单次输入最多16张，请先确认或清空');
+            return;
         }
-
-        this.renderMeldModalTiles();
-        this.renderMeldPreview();
+        this.meldModal.pendingTiles.push(tileId);
+        this.scanAndGroupPending();
+        this.refreshMeldModal();
     }
 
-    // 副露预览区：点击移除指定索引的牌
     removeMeldSelectedTile(index) {
-        const { type, selectedTiles } = this.meldModal;
-        if (index < 0 || index >= selectedTiles.length) return;
+        if (index < 0 || index >= this.meldModal.pendingTiles.length) return;
+        this.meldModal.pendingTiles.splice(index, 1);
+        // 删除单张不触发自动成组（避免拆用户未提交的输入）
+        this.refreshMeldModal();
+    }
 
-        selectedTiles.splice(index, 1);
-        // 碰/杠只选1张的情况，直接清空
-        if (type !== 'chi') {
-            this.meldModal.selectedTiles = [];
+    // ===== 按阈值+前缀规则自动把 pendingTiles 识别为组 =====
+    scanAndGroupPending(forceFinal = false) {
+        while (true) {
+            const tiles = this.meldModal.pendingTiles;
+            if (tiles.length < 3) break;
+
+            let grouped = false;
+
+            // ===== Rule 1: 4张前缀 =====
+            if (tiles.length >= 4) {
+                const t0 = tiles[0], t1 = tiles[1], t2 = tiles[2], t3 = tiles[3];
+                // 4张完全相同 -> 杠 (默认明杠)
+                if (t0 === t1 && t1 === t2 && t2 === t3) {
+                    this.meldModal.groups.push({ type: 'minggang', tiles: [t0, t0, t0, t0] });
+                    tiles.splice(0, 4);
+                    grouped = true;
+                }
+                // 前3张相同，第4张不同 -> 碰
+                else if (t0 === t1 && t1 === t2 && t2 !== t3) {
+                    this.meldModal.groups.push({ type: 'pong', tiles: [t0, t0, t0] });
+                    tiles.splice(0, 3);
+                    grouped = true;
+                }
+            }
+
+            // ===== Rule 2: 3张前缀（或 length===3）=====
+            if (!grouped && tiles.length >= 3) {
+                const t0 = tiles[0], t1 = tiles[1], t2 = tiles[2];
+                // 尝试吃（3连续同花色序数牌）- 不论是否 forceFinal，到3张都试
+                if (isNumberTile(t0) && isNumberTile(t1) && isNumberTile(t2)) {
+                    const tiles3 = [t0, t1, t2].map(id => TILES[id]);
+                    if (tiles3.every(t => t && tiles3[0].type === t.type) &&
+                        typeof tiles3[0].value === 'number' &&
+                        typeof tiles3[1].value === 'number' &&
+                        typeof tiles3[2].value === 'number') {
+                        const sorted = tiles3.map(t => t.value).sort((a, b) => a - b);
+                        if (sorted[0] + 1 === sorted[1] && sorted[1] + 1 === sorted[2]) {
+                            // 保留原始3个tileId，按value排序后
+                            const sortedIds = [t0, t1, t2].sort(
+                                (a, b) => TILES[a].value - TILES[b].value
+                            );
+                            this.meldModal.groups.push({ type: 'chi', tiles: sortedIds });
+                            tiles.splice(0, 3);
+                            grouped = true;
+                        }
+                    }
+                }
+                // forceFinal（最终确认前）：3张相同也要当碰组加入
+                if (!grouped && forceFinal && t0 === t1 && t1 === t2) {
+                    this.meldModal.groups.push({ type: 'pong', tiles: [t0, t0, t0] });
+                    tiles.splice(0, 3);
+                    grouped = true;
+                }
+            }
+
+            if (!grouped) {
+                // 第一张无法和后续组成 -> 如果是 forceFinal，丢弃第一张继续扫
+                if (forceFinal && tiles.length >= 3) {
+                    tiles.shift();
+                    continue;
+                }
+                break;
+            }
         }
-        this.renderMeldModalTiles();
-        this.renderMeldPreview();
+    }
+
+    // ===== group 操作 =====
+    toggleSelectMeldGroup(idx) {
+        if (this.meldModal.selectedGroupIdx === idx) this.meldModal.selectedGroupIdx = -1;
+        else this.meldModal.selectedGroupIdx = idx;
+        this.renderMeldGroupsPreview();
+    }
+
+    removeMeldGroup(idx) {
+        const g = this.meldModal.groups[idx];
+        if (!g) return;
+        // 把该组牌退回给 pendingTiles（用户可继续重新组合）
+        for (const t of g.tiles) this.meldModal.pendingTiles.push(t);
+        this.meldModal.groups.splice(idx, 1);
+        if (this.meldModal.selectedGroupIdx === idx) this.meldModal.selectedGroupIdx = -1;
+        else if (this.meldModal.selectedGroupIdx > idx) this.meldModal.selectedGroupIdx--;
+        this.refreshMeldModal();
+    }
+
+    // 切换选中组的杠类型（明/暗）
+    setGangType(type) {
+        const idx = this.meldModal.selectedGroupIdx;
+        const g = this.meldModal.groups[idx];
+        if (!g) return;
+        if (g.type !== 'minggang' && g.type !== 'angang') return;
+        if (type !== 'minggang' && type !== 'angang') return;
+        g.type = type;
+        this.renderMeldGroupsPreview();
     }
 
     confirmMeld() {
-        const { type, selectedTiles } = this.meldModal;
-        
-        if (type === 'chi') {
-            if (selectedTiles.length !== 3) {
-                this.showMessage('请选择3张牌');
-                return;
-            }
-            selectedTiles.sort((a, b) => TILES[a].value - TILES[b].value);
-            const values = selectedTiles.map(t => TILES[t].value);
-            if (values[1] !== values[0] + 1 || values[2] !== values[1] + 1) {
-                this.showMessage('顺子必须是连续的3张牌');
-                return;
-            }
-            for (const tileId of selectedTiles) {
-                if (this.tileUsage[tileId] >= this.maxTileCount) {
-                    this.showMessage(`${TILES[tileId].name}已用完`);
-                    return;
-                }
-            }
-            const meld = { type: 'chi', tiles: [...selectedTiles] };
-            this.melds.push(meld);
-            for (const tileId of selectedTiles) {
-                this.tileUsage[tileId]++;
-            }
-        } else {
-            if (selectedTiles.length !== 1) {
-                this.showMessage('请选择1张牌');
-                return;
-            }
-            
-            const tileId = selectedTiles[0];
-            const count = type === 'pong' ? 3 : 4;
-            
-            if (this.tileUsage[tileId] + count > this.maxTileCount) {
-                this.showMessage(`${TILES[tileId].name}数量不足`);
-                return;
-            }
+        // 最终确认前强制扫描一次（把尾部剩余的3同/吃/4同也识别掉；碰在forceFinal下才会被3张触发）
+        this.scanAndGroupPending(true);
 
-            const meld = { type: type, tiles: Array(count).fill(tileId) };
-            this.melds.push(meld);
-            this.tileUsage[tileId] += count;
+        const { groups } = this.meldModal;
+        if (groups.length === 0) {
+            this.showMessage('没有可添加的成组副露（吃/碰/杠至少3张连续或相同）');
+            return;
         }
-
+        // 校验每组牌可用数量
+        const totalNeed = {};
+        for (const g of groups) {
+            for (const t of g.tiles) totalNeed[t] = (totalNeed[t] || 0) + 1;
+        }
+        for (const [t, n] of Object.entries(totalNeed)) {
+            if ((this.tileUsage[t] || 0) + n > this.maxTileCount) {
+                this.showMessage(`${TILES[t]?.name || t} 数量不足（需要${n}张，但只剩${this.maxTileCount - (this.tileUsage[t] || 0)}张）`);
+                return;
+            }
+        }
+        // 全部通过 - 提交
+        for (const g of groups) {
+            this.melds.push({ ...g, tiles: [...g.tiles] });
+            for (const t of g.tiles) this.tileUsage[t]++;
+        }
         this.closeMeldModal();
         this.updateDisplay();
     }
 
     closeMeldModal() {
         document.getElementById('meldModal').classList.remove('show');
-        this.meldModal = { type: null, selectedTiles: [] };
+        this.meldModal = {
+            pendingTiles: [],
+            groups: [],
+            selectedGroupIdx: -1
+        };
     }
 
     removeMeld(index) {
@@ -648,7 +791,7 @@ class MahjongApp {
         if (!container) return;
 
         if (this.melds.length === 0) {
-            container.innerHTML = '<p class="placeholder">点击下方按钮添加副露</p>';
+            container.innerHTML = '<p class="placeholder">点击添加副露</p>';
             return;
         }
 
@@ -671,15 +814,26 @@ class MahjongApp {
         }).join('');
     }
 
+    // ====== 工具：計算杠數 ======
+    getKongCount() {
+        return this.melds.filter(m => m.type === 'minggang' || m.type === 'angang').length;
+    }
+
+    // ====== 工具：預期和牌總數 = 基本14張 + 每杠1張補牌 ======
+    getExpectedTotalTiles() {
+        return 14 + this.getKongCount();
+    }
+
+    getTotalTiles() {
+        return this.hand.length + this.melds.reduce((sum, m) => sum + m.tiles.length, 0);
+    }
+
     updateHandCount() {
         const countEl = document.getElementById('handCount');
         if (countEl) {
-            const totalTiles = this.hand.length + this.melds.reduce((sum, m) => sum + m.tiles.length, 0);
-            countEl.textContent = totalTiles;
+            countEl.textContent = this.getTotalTiles();
         }
     }
-
-    updateConditions() {}
 
     getConditions() {
         const winTypeRadio = document.querySelector('input[name="winType"]:checked');
@@ -695,10 +849,13 @@ class MahjongApp {
     }
 
     calculate() {
-        const totalTiles = this.hand.length + this.melds.reduce((sum, m) => sum + m.tiles.length, 0);
+        const totalTiles = this.getTotalTiles();
+        const expected = this.getExpectedTotalTiles();
+        const kongCount = this.getKongCount();
         
-        if (totalTiles !== 14) {
-            this.showResult({ valid: false, message: `牌数不正确，当前${totalTiles}张，需要14张` });
+        if (totalTiles !== expected) {
+            const kongInfo = kongCount > 0 ? `（含${kongCount}杠，应${expected}张）` : '';
+            this.showResult({ valid: false, message: `牌数不正确，当前${totalTiles}张，需要${expected}张${kongInfo}` });
             return;
         }
 

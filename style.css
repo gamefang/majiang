@@ -341,11 +341,12 @@ section h2 .tile-count {
     background: #7f8c8d;
 }
 
-/* Melds Section */
+/* Melds Section - 样式与手牌区域一致（虚线框可点击） */
 .melds-display {
-    min-height: 60px;
+    min-height: 70px;
     padding: 12px;
-    background: #f5f5f0;
+    background: var(--tile-bg);
+    border: 2px dashed var(--tile-border);
     border-radius: 10px;
     display: flex;
     flex-wrap: wrap;
@@ -353,11 +354,19 @@ section h2 .tile-count {
     justify-content: center;
     align-items: center;
     margin-bottom: 12px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.melds-display:hover {
+    border-color: var(--primary-color);
+    background: #fbfaf4;
 }
 
 .melds-display .placeholder {
     color: var(--text-secondary);
     font-size: 0.9rem;
+    pointer-events: none;
 }
 
 .meld-group {
@@ -436,6 +445,18 @@ section h2 .tile-count {
     transition: var(--transition);
 }
 
+.meld-btn.primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(35, 122, 87, 0.3);
+}
+
+.meld-btn.primary:hover {
+    filter: brightness(1.05);
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+}
+
 .meld-btn:hover {
     background: var(--primary-color);
     color: white;
@@ -449,6 +470,141 @@ section h2 .tile-count {
 .meld-btn.clear-melds:hover {
     background: #e74c3c;
     color: white;
+}
+
+/* Melds preview group area - inside meld modal */
+.melds-preview-groups {
+    margin-top: 12px;
+    padding: 12px;
+    background: #f7f6ee;
+    border: 1px dashed #c9bf8d;
+    border-radius: 8px;
+}
+
+.melds-preview-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.melds-preview-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.preview-empty {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+/* Group item (in meld preview) */
+.preview-meld-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px 8px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    background: white;
+    position: relative;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.preview-meld-group:hover {
+    background: #fff8f8;
+}
+
+.preview-meld-group.selected {
+    border-color: #e67e22;
+    background: #fff6e8;
+    box-shadow: 0 2px 8px rgba(230, 126, 34, 0.25);
+}
+
+.preview-meld-group .preview-meld-tiles {
+    display: flex;
+    gap: 2px;
+}
+
+.preview-meld-group .preview-meld-tile {
+    font-size: 1.8rem;
+    padding: 2px 4px;
+    min-width: 1.95rem;
+    text-align: center;
+    background: linear-gradient(180deg, #fff 0%, #f0ebe0 100%);
+    border: 1px solid var(--tile-border);
+    border-radius: 4px;
+}
+
+.preview-meld-group .preview-meld-tile.face-down {
+    background: linear-gradient(180deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: transparent;
+    border-color: var(--primary-dark);
+}
+
+.preview-meld-group .preview-meld-label {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    margin-top: 3px;
+}
+
+.preview-meld-group .preview-meld-remove {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 0.7rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.preview-meld-group:hover .preview-meld-remove {
+    opacity: 1;
+}
+
+/* Gang-switcher (for selected gang group) - 放在已识别组上面 */
+.gang-switcher {
+    margin-top: 10px;
+    margin-bottom: 4px;
+    padding: 10px 14px;
+    background: #fff6e8;
+    border: 1px solid #e6b673;
+    border-radius: 8px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.gang-switcher .gang-switcher-label {
+    color: #8c5d1a;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.gang-switcher .radio-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.modal-body-scroll {
+    overflow-y: auto;
+    max-height: 72vh;
 }
 
 /* Conditions Section */

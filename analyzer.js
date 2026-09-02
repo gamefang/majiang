@@ -165,6 +165,7 @@ class MahjongAnalyzer {
 
     checkSpecialHands(allTiles) {
         const tileCount = this.countTiles(allTiles);
+        const hasKong = this.melds.some(m => m.type === 'minggang' || m.type === 'angang');
 
         if (this.melds.length === 0 && this.checkShiSanYao(tileCount)) {
             const fans = [];
@@ -187,7 +188,7 @@ class MahjongAnalyzer {
             return { valid: true, fans: this.applyExclusionRules(fans), totalScore: 0 };
         }
 
-        if (this.melds.length === 0 && allTiles.length === 14) {
+        if (this.melds.length === 0 && !hasKong && allTiles.length === 14) {
             const totalPairs = Object.values(tileCount).reduce((sum, c) => sum + Math.floor(c / 2), 0);
             if (totalPairs === 7 && Object.values(tileCount).every(c => c === 2 || c === 4)) {
                 const fans = this.detectQiduiFans(tileCount);
