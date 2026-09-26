@@ -338,6 +338,16 @@ class MahjongAnalyzer {
             if (tiles.every(t => !isTerminalOrHonor(t))) {
                 this.addFan(fans, 'duanyao');
             }
+
+            const numberSuits = new Set(
+                Object.keys(tileCount)
+                    .filter(isNumberTile)
+                    .map(t => TILES[t].type)
+            );
+
+            if (numberSuits.size === 2) {
+                this.addFan(fans, 'queyimen');
+            }
         }
 
         this.addConditionFans(fans);
@@ -350,11 +360,11 @@ class MahjongAnalyzer {
         const allSets = [...sets, ...this.melds];
         const tileCount = this.countTiles(allTiles);
 
-        if (!fans.some(f => f.score >= 88)) this.check88Fan(fans, allSets, pair, allTiles, tileCount);
-        if (!fans.some(f => f.score >= 64)) this.check64Fan(fans, allSets, pair, allTiles, tileCount);
-        if (!fans.some(f => f.score >= 48)) this.check48Fan(fans, allSets, pair, allTiles, tileCount);
-        if (!fans.some(f => f.score >= 32)) this.check32Fan(fans, allSets, pair, allTiles, tileCount);
-        if (!fans.some(f => f.score >= 24)) this.check24Fan(fans, allSets, pair, allTiles, tileCount);
+        this.check88Fan(fans, allSets, pair, allTiles, tileCount);
+        this.check64Fan(fans, allSets, pair, allTiles, tileCount);
+        this.check48Fan(fans, allSets, pair, allTiles, tileCount);
+        this.check32Fan(fans, allSets, pair, allTiles, tileCount);
+        this.check24Fan(fans, allSets, pair, allTiles, tileCount);
         
         this.checkLowerFans(fans, allSets, pair, allTiles, tileCount);
         this.addConditionFans(fans);
@@ -581,9 +591,17 @@ class MahjongAnalyzer {
 
         if (gangs.filter(s => s.type === 'minggang').length === 1) this.addFan(fans, 'minggang');
         
-        const suits = new Set(allTiles.filter(t => isNumberTile(t)).map(t => TILES[t].type));
-        if (suits.size === 2 && !allTiles.some(t => isHonorTile(t))) this.addFan(fans, 'queyimen');
-        if (!allTiles.some(t => isHonorTile(t)) && allTiles.length > 0) this.addFan(fans, 'wuzi');
+        const numberSuits = new Set(
+            allTiles.filter(isNumberTile).map(t => TILES[t].type)
+        );
+
+        if (numberSuits.size === 2) {
+            this.addFan(fans, 'queyimen');
+        }
+
+        if (!allTiles.some(t => isHonorTile(t)) && allTiles.length > 0) {
+            this.addFan(fans, 'wuzi');
+        }
     }
 
     addConditionFans(fans) {
@@ -606,9 +624,15 @@ class MahjongAnalyzer {
             this.addFan(fans, 'hujuezhang');
         }
 
-        if (this.melds.length === 0 && this.conditions.isSelfDrawn) {
+        const hasOpenMeld = this.melds.some(m =>
+            m.type === 'chi' ||
+            m.type === 'pong' ||
+            m.type === 'minggang'
+        );
+
+        if (!hasOpenMeld && this.conditions.isSelfDrawn) {
             this.addFan(fans, 'buqiuren');
-        } else if (this.melds.length === 0 && !this.conditions.isSelfDrawn) {
+        } else if (!hasOpenMeld && !this.conditions.isSelfDrawn) {
             this.addFan(fans, 'menqianqing');
         } else if (this.conditions.isSelfDrawn) {
             this.addFan(fans, 'zimo');
