@@ -1,0 +1,1263 @@
+<!DOCTYPE html><html><head>
+      <title>rule</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.47/dist/katex.min.css">
+      
+      
+      
+      
+      
+      
+      
+      <style>
+      code[class*=language-],pre[class*=language-]{color:#333;background:0 0;font-family:Consolas,"Liberation Mono",Menlo,Courier,monospace;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.4;-moz-tab-size:8;-o-tab-size:8;tab-size:8;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:.8em;overflow:auto;border-radius:3px;background:#f5f5f5}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal;background:#f5f5f5}.token.blockquote,.token.comment{color:#969896}.token.cdata{color:#183691}.token.doctype,.token.macro.property,.token.punctuation,.token.variable{color:#333}.token.builtin,.token.important,.token.keyword,.token.operator,.token.rule{color:#a71d5d}.token.attr-value,.token.regex,.token.string,.token.url{color:#183691}.token.atrule,.token.boolean,.token.code,.token.command,.token.constant,.token.entity,.token.number,.token.property,.token.symbol{color:#0086b3}.token.prolog,.token.selector,.token.tag{color:#63a35c}.token.attr-name,.token.class,.token.class-name,.token.function,.token.id,.token.namespace,.token.pseudo-class,.token.pseudo-element,.token.url-reference .token.variable{color:#795da3}.token.entity{cursor:help}.token.title,.token.title .token.punctuation{font-weight:700;color:#1d3e81}.token.list{color:#ed6a43}.token.inserted{background-color:#eaffea;color:#55a532}.token.deleted{background-color:#ffecec;color:#bd2c00}.token.bold{font-weight:700}.token.italic{font-style:italic}.language-json .token.property{color:#183691}.language-markup .token.tag .token.punctuation{color:#333}.language-css .token.function,code.language-css{color:#0086b3}.language-yaml .token.atrule{color:#63a35c}code.language-yaml{color:#183691}.language-ruby .token.function{color:#333}.language-markdown .token.url{color:#795da3}.language-makefile .token.symbol{color:#795da3}.language-makefile .token.variable{color:#183691}.language-makefile .token.builtin{color:#0086b3}.language-bash .token.keyword{color:#0086b3}pre[data-line]{position:relative;padding:1em 0 1em 3em}pre[data-line] .line-highlight-wrapper{position:absolute;top:0;left:0;background-color:transparent;display:block;width:100%}pre[data-line] .line-highlight{position:absolute;left:0;right:0;padding:inherit 0;margin-top:1em;background:hsla(24,20%,50%,.08);background:linear-gradient(to right,hsla(24,20%,50%,.1) 70%,hsla(24,20%,50%,0));pointer-events:none;line-height:inherit;white-space:pre}pre[data-line] .line-highlight:before,pre[data-line] .line-highlight[data-end]:after{content:attr(data-start);position:absolute;top:.4em;left:.6em;min-width:1em;padding:0 .5em;background-color:hsla(24,20%,50%,.4);color:#f4f1ef;font:bold 65%/1.5 sans-serif;text-align:center;vertical-align:.3em;border-radius:999px;text-shadow:none;box-shadow:0 1px #fff}pre[data-line] .line-highlight[data-end]:after{content:attr(data-end);top:auto;bottom:.4em}html body{font-family:'Helvetica Neue',Helvetica,'Segoe UI',Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ol,html body>ul{margin-bottom:16px}html body ol,html body ul{padding-left:2em}html body ol.no-list,html body ul.no-list{padding:0;list-style-type:none}html body ol ol,html body ol ul,html body ul ol,html body ul ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:700;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:700}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::after,html body code::before{letter-spacing:-.2em;content:'\00a0'}html body pre>code{padding:0;margin:0;word-break:normal;white-space:pre;background:0 0;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:after,html body pre code:before,html body pre tt:after,html body pre tt:before{content:normal}html body blockquote,html body dl,html body ol,html body p,html body pre,html body ul{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body code,html body pre{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview ul{list-style:disc}.markdown-preview ul ul{list-style:circle}.markdown-preview ul ul ul{list-style:square}.markdown-preview ol{list-style:decimal}.markdown-preview ol ol,.markdown-preview ul ol{list-style-type:lower-roman}.markdown-preview ol ol ol,.markdown-preview ol ul ol,.markdown-preview ul ol ol,.markdown-preview ul ul ol{list-style-type:lower-alpha}.markdown-preview .newpage,.markdown-preview .pagebreak{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview pre[data-line]{position:relative;padding:1em 0 1em 3em!important}.markdown-preview pre[data-line] .line-highlight-wrapper{position:absolute;top:0;left:0;background-color:transparent;display:block;width:100%}.markdown-preview pre[data-line] .line-highlight{position:absolute;left:0;right:0;padding:inherit 0;margin-top:1em;background:hsla(24,20%,50%,.08);background:var(--line-highlight-background,linear-gradient(to right,hsla(24,20%,50%,.1) 70%,hsla(24,20%,50%,0)));pointer-events:none;line-height:inherit;white-space:pre}.markdown-preview pre[data-line] .line-highlight:before,.markdown-preview pre[data-line] .line-highlight[data-end]:after{content:attr(data-start);position:absolute;top:.4em;left:.6em;min-width:1em;padding:0 .5em;background-color:hsla(24,20%,50%,.4);color:#f4f1ef;font:bold 65%/1.5 sans-serif;text-align:center;vertical-align:.3em;border-radius:999px;text-shadow:none}.markdown-preview pre[data-line] .line-highlight[data-end]:after{content:attr(data-end);top:auto;bottom:.4em}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center!important}.markdown-preview:not([data-for=preview]) .code-chunk .code-chunk-btn-group{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .status{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .output-div{margin-bottom:16px}.markdown-preview .md-toc{padding:0}.markdown-preview .md-toc .md-toc-details{margin:0;padding:0;border:none}.markdown-preview .md-toc ol.md-toc-ol{margin:0;padding-left:1.6em}.markdown-preview .md-toc summary.md-toc-link-wrapper{cursor:pointer;list-style-position:outside}.markdown-preview .md-toc summary.md-toc-link-wrapper::marker{font-size:.85em}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link div,.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}.markdown-preview .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='0']{margin-left:12px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='1']{margin-left:28px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='2']{margin-left:44px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='3']{margin-left:60px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='4']{margin-left:76px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='5']{margin-left:80px}.markdown-preview a.tag,.markdown-preview a.tag:active,.markdown-preview a.tag:link,.markdown-preview a.tag:visited,.markdown-preview span.tag:not(.token){display:inline-block;background-color:var(--vscode-badge-background,rgba(127,127,127,.18));color:var(--vscode-badge-foreground,currentColor);border-radius:2em;font-size:.85em;font-weight:500;padding:.05em .55em;line-height:1.5;white-space:nowrap;text-decoration:none;text-shadow:none;box-shadow:none;transition:background-color .12s ease,opacity .12s ease}.markdown-preview a.tag{cursor:pointer}.markdown-preview a.tag:focus,.markdown-preview a.tag:hover{background-color:var(--vscode-badge-background,rgba(127,127,127,.32));color:var(--vscode-badge-foreground,currentColor);opacity:.85;text-decoration:none;outline:0}.markdown-preview .wikilink-embed-content{border-left:3px solid var(--vscode-textBlockQuote-border,rgba(128,128,128,.3));background:var(--vscode-textBlockQuote-background,rgba(128,128,128,.05));margin:.5em 0;padding:.5em .75em;border-radius:0 3px 3px 0}.markdown-preview .wikilink-embed-content.wikilink-embed-error{border-left-color:var(--vscode-errorForeground,#cf222e);color:var(--vscode-errorForeground,#cf222e);font-style:italic;opacity:.8}.markdown-preview .wikilink-embed-content h1:first-child,.markdown-preview .wikilink-embed-content h2:first-child,.markdown-preview .wikilink-embed-content h3:first-child,.markdown-preview .wikilink-embed-content h4:first-child,.markdown-preview .wikilink-embed-content h5:first-child,.markdown-preview .wikilink-embed-content h6:first-child{margin-top:.25em}.markdown-preview .wikilink-embed-content .wikilink-embed-content{margin:.25em 0;padding:.25em .5em}.markdown-preview .block-id{display:none}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:var(--vscode-scrollbarSlider-background,rgba(150,150,150,.66));border:4px solid var(--vscode-scrollbarSlider-background,rgba(150,150,150,.66));background-clip:content-box}.scrollbar-style::-webkit-scrollbar-thumb:hover{background-color:var(--vscode-scrollbarSlider-hoverBackground,rgba(120,120,120,.66))}html body[for=html-export]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0;min-height:100vh}@media screen and (min-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{font-size:14px!important;padding:1em}}@media print{html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:var(--vscode-scrollbarSlider-background,rgba(150,150,150,.66));border:4px solid var(--vscode-scrollbarSlider-background,rgba(150,150,150,.66));background-clip:content-box}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb:hover{background-color:var(--vscode-scrollbarSlider-hoverBackground,rgba(120,120,120,.66))}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc{padding:0 16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-details{margin:0;padding:0;border:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc ol.md-toc-ol{margin:0;padding-left:1.6em}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link div,html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='0']{padding-left:0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='1']{padding-left:16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='2']{padding-left:32px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='3']{padding-left:48px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='4']{padding-left:64px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='5']{padding-left:80px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% - 300px);padding:2em calc(50% - 457px - 300px / 2);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+      <!-- The content below will be included at the end of the <head> element. -->
+<script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function () {
+    // your code here
+  });
+</script>
+    </head>
+    <body for="html-export">
+      <div class="crossnote markdown-preview  ">
+      
+<p><a href="index.html">返回</a></p>
+<h1 id="国标麻将算番规则">国标麻将算番规则 </h1>
+<h2 id="一-原始规则与参考资料">一、原始规则与参考资料 </h2>
+<h3 id="1-1998-年中国麻将竞赛规则试行">1. 1998 年《中国麻将竞赛规则（试行）》 </h3>
+<ul>
+<li>国家体育总局社会体育指导中心制定</li>
+<li>1998 年 7 月</li>
+<li>人民体育出版社</li>
+<li>ISBN：7-5009-1630-2</li>
+</ul>
+<p><a href="https://majiang.world/article/%E4%B8%AD%E5%9B%BD%E9%BA%BB%E5%B0%86%E7%AB%9E%E8%B5%9B%E8%A7%84%E5%88%99%EF%BC%88%E8%AF%95%E8%A1%8C%EF%BC%89">https://majiang.world/article/中国麻将竞赛规则（试行）</a><br>
+<a href="https://ooyamaneko.net/download/mahjong/mcr/MCR_1998_zh.pdf">https://ooyamaneko.net/download/mahjong/mcr/MCR_1998_zh.pdf</a></p>
+<h3 id="2-国际麻将联盟mil国标麻将mcr规则补充细则试行2025">2. 国际麻将联盟（MIL）《国标麻将（MCR）规则补充细则（试行，2025）》 </h3>
+<p><a href="https://majiang.world/pdf/mcr2025">https://majiang.world/pdf/mcr2025</a></p>
+<h3 id="3-mil-此前公开的补充细则2023">3. MIL 此前公开的补充细则（2023） </h3>
+<p>该版本为 2023-01-14 发布的争议解释文件，内容仍是理解当前 MCR 补充规则的重要公开依据：</p>
+<p><a href="https://majiang.world/article/%E5%9B%BD%E6%A0%87%E9%BA%BB%E5%B0%86(MCR)%E8%A7%84%E5%88%99%E8%A1%A5%E5%85%85%E7%BB%86%E5%88%99">https://majiang.world/article/国标麻将(MCR)规则补充细则</a></p>
+<hr>
+<h1 id="二-麻将牌与基本和牌形式">二、麻将牌与基本和牌形式 </h1>
+<h2 id="21-麻将牌">2.1 麻将牌 </h2>
+<p>全副麻将共 <strong>144 张</strong>，分为 6 类 42 种：</p>
+<h3 id="数牌">数牌 </h3>
+<ul>
+<li>万子：一万至九万，各 4 张，共 36 张</li>
+<li>饼子：一饼至九饼，各 4 张，共 36 张</li>
+<li>条子：一条至九条，各 4 张，共 36 张</li>
+</ul>
+<p>合计 <strong>108 张</strong>。</p>
+<h3 id="字牌">字牌 </h3>
+<ul>
+<li>风牌：东、南、西、北，各 4 张，共 16 张</li>
+<li>箭牌：中、发、白，各 4 张，共 12 张</li>
+</ul>
+<p>合计 <strong>28 张</strong>。</p>
+<p>另有：</p>
+<ul>
+<li>花牌：春、夏、秋、冬、梅、兰、竹、菊，共 8 张</li>
+</ul>
+<hr>
+<h1 id="三-和牌的基本要求">三、和牌的基本要求 </h1>
+<h2 id="31-普通和牌">3.1 普通和牌 </h2>
+<p>标准和牌由：</p>
+<ul>
+<li>1 个将牌（对子）</li>
+<li>4 副牌</li>
+</ul>
+<p>组成。</p>
+<p>牌副可以是：</p>
+<ul>
+<li><strong>顺子</strong>：同花色连续三张序数牌，例如 123</li>
+<li><strong>刻子</strong>：三张相同的牌，例如 111</li>
+<li><strong>杠</strong>：四张相同的牌，例如 1111</li>
+</ul>
+<p>普通和牌的基本结构包括：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>11 + 123 + 123 + 123 + 123
+11 + 123 + 123 + 123 + 111
+11 + 123 + 123 + 111 + 111
+11 + 123 + 111 + 111 + 111
+11 + 111 + 111 + 111 + 111
+</code></pre><h2 id="32-特殊和牌">3.2 特殊和牌 </h2>
+<p>1998 规则列明的特殊和牌包括：</p>
+<ul>
+<li>七对</li>
+<li>十三幺</li>
+<li>全不靠</li>
+</ul>
+<p>国标麻将番种体系另有：</p>
+<ul>
+<li>七星不靠</li>
+</ul>
+<p>作为特殊牌型番种。</p>
+<h2 id="33-和牌方式">3.3 和牌方式 </h2>
+<h3 id="自摸和">自摸和 </h3>
+<p>自己抓牌后成和。</p>
+<p>包括：</p>
+<ul>
+<li>普通自摸</li>
+<li>杠上开花</li>
+<li>补花和</li>
+</ul>
+<h3 id="点和">点和 </h3>
+<p>和别人打出的牌。</p>
+<p>包括：</p>
+<ul>
+<li>普通点和</li>
+<li>抢杠和</li>
+</ul>
+<hr>
+<h1 id="四-起和与计分">四、起和与计分 </h1>
+<h2 id="41-起和">4.1 起和 </h2>
+<p>和牌必须：</p>
+<ol>
+<li>符合规定的和牌牌型；</li>
+<li>番种分值合计至少 <strong>8 番</strong>；</li>
+<li>符合规定的和牌方式。</li>
+</ol>
+<p>因此，花牌本身不能作为凑足 8 番起和的依据。</p>
+<h2 id="42-底分与基本分">4.2 底分与基本分 </h2>
+<p>1998 规则下：</p>
+<ul>
+<li>底分：8 分</li>
+<li>基本分：和牌后各个番种分值的总和</li>
+<li>罚分：比赛过程中的犯规罚分</li>
+</ul>
+<h3 id="自摸">自摸 </h3>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>（底分 + 基本分）× 3
+</code></pre><p>三名未和牌者分别支付。</p>
+<h3 id="点和-1">点和 </h3>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>底分 × 3 + 基本分
+</code></pre><p>三名未和牌者各支付 8 分；放铳者另外支付基本分。</p>
+<hr>
+<h1 id="五-计番基本原则">五、计番基本原则 </h1>
+<p>番种不是简单地全部相加。1998 规则规定，计番时必须遵守以下原则。</p>
+<h2 id="51-不重复原则">5.1 不重复原则 </h2>
+<p>当某番种的成立条件必然同时包含另一番种时，被包含的番种不得重复计算。</p>
+<h2 id="52-不拆移原则">5.2 不拆移原则 </h2>
+<p>一个番种成立后，不能把该番种已经使用的牌拆开，再重新组成其他番种重复计算。</p>
+<h2 id="53-不得相同原则">5.3 不得相同原则 </h2>
+<p>已经组合过某一番种的牌，不能再和其他牌组组成同一种番种再次计算。</p>
+<h2 id="54-就高不就低原则">5.4 就高不就低原则 </h2>
+<p>同一组牌可以组成不同番种而只能选择其中一个时，选择分值较高的番种。</p>
+<h2 id="55-套算一次原则">5.5 套算一次原则 </h2>
+<p>尚未组合过的一副牌，只可以和已经组合过的相应牌副套算一次。</p>
+<hr>
+<h1 id="六-81-种番种">六、81 种番种 </h1>
+<p>国标麻将传统番种体系共 <strong>81 种</strong>。</p>
+<p>番值依次为：</p>
+<p><strong>88、64、48、32、24、16、12、8、6、4、2、1 番。</strong></p>
+<hr>
+<h1 id="七-88-番">七、88 番 </h1>
+<h2 id="1-大四喜">1. 大四喜 </h2>
+<p>和牌中有四副风牌刻子或杠：</p>
+<ul>
+<li>东</li>
+<li>南</li>
+<li>西</li>
+<li>北</li>
+</ul>
+<p><strong>不计：</strong></p>
+<ul>
+<li>三风刻</li>
+<li>圈风刻</li>
+<li>门风刻</li>
+<li>碰碰和</li>
+</ul>
+<p><strong>可另计：</strong></p>
+<ul>
+<li>混幺九</li>
+<li>混一色</li>
+<li>字一色</li>
+<li>其他符合条件的番种</li>
+</ul>
+<hr>
+<h2 id="2-大三元">2. 大三元 </h2>
+<p>和牌中有：</p>
+<ul>
+<li>中刻子/杠</li>
+<li>发刻子/杠</li>
+<li>白刻子/杠</li>
+</ul>
+<p><strong>不计：</strong></p>
+<ul>
+<li>箭刻</li>
+</ul>
+<p>双箭刻也不能从构成大三元的三副箭牌中重复取得。</p>
+<hr>
+<h2 id="3-绿一色">3. 绿一色 </h2>
+<p>和牌全部由以下牌组成：</p>
+<ul>
+<li>二条</li>
+<li>三条</li>
+<li>四条</li>
+<li>六条</li>
+<li>八条</li>
+<li>发</li>
+</ul>
+<p><strong>不计：</strong></p>
+<ul>
+<li>混一色</li>
+</ul>
+<p>如果牌型中完全没有发，可以另计：</p>
+<ul>
+<li>清一色</li>
+</ul>
+<hr>
+<h2 id="4-九莲宝灯">4. 九莲宝灯 </h2>
+<p>同一种花色组成：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>1112345678999
+</code></pre><p>再以同花色任意一张牌和牌。</p>
+<p>即同一花色具有：</p>
+<ul>
+<li>三张一</li>
+<li>一张二至八</li>
+<li>三张九</li>
+</ul>
+<p>并以同花色任意序数牌成和。</p>
+<p><strong>不计：</strong></p>
+<ul>
+<li>清一色</li>
+<li>门前清</li>
+<li>不求人</li>
+</ul>
+<p>特殊计番规则：</p>
+<ul>
+<li>和牌牌为 2 或 5 或 8 时，可计 1 个幺九刻；</li>
+<li>与九莲宝灯主体重复的其他幺九刻不重复计算。</li>
+</ul>
+<hr>
+<h2 id="5-四杠">5. 四杠 </h2>
+<p>和牌中有四副杠。</p>
+<p>四杠属于杠类番种。</p>
+<hr>
+<h2 id="6-连七对">6. 连七对 </h2>
+<p>同一种花色组成连续的七个对子：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>11 22 33 44 55 66 77
+</code></pre><p>或：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>22 33 44 55 66 77 88
+</code></pre><p>等连续七组对子。</p>
+<p><strong>不计：</strong></p>
+<ul>
+<li>清一色</li>
+<li>七对</li>
+<li>平和</li>
+</ul>
+<hr>
+<h2 id="7-十三幺">7. 十三幺 </h2>
+<p>由以下 13 种幺九牌组成：</p>
+<ul>
+<li>一万、九万</li>
+<li>一条、九条</li>
+<li>一饼、九饼</li>
+<li>东、南、西、北</li>
+<li>中、发、白</li>
+</ul>
+<p>其中任意一种再重复一张作为将牌。</p>
+<hr>
+<h1 id="八-64-番">八、64 番 </h1>
+<h2 id="8-清幺九">8. 清幺九 </h2>
+<p>和牌全部由序数牌：</p>
+<ul>
+<li>一</li>
+<li>九</li>
+</ul>
+<p>组成。</p>
+<p>可以由刻子、杠及将牌组成。</p>
+<p><strong>不计：</strong></p>
+<ul>
+<li>碰碰和</li>
+<li>幺九刻</li>
+<li>无字</li>
+<li>双同刻</li>
+</ul>
+<p>根据 MIL 补充规则：</p>
+<ul>
+<li>可以计三同刻；</li>
+<li>不计双同刻。</li>
+</ul>
+<hr>
+<h2 id="9-小四喜">9. 小四喜 </h2>
+<p>有：</p>
+<ul>
+<li>三副风牌刻子/杠</li>
+<li>一副风牌将牌</li>
+</ul>
+<p><strong>不计：</strong></p>
+<ul>
+<li>三风刻</li>
+</ul>
+<hr>
+<h2 id="10-小三元">10. 小三元 </h2>
+<p>有：</p>
+<ul>
+<li>两副箭牌刻子/杠</li>
+<li>一副箭牌将牌</li>
+</ul>
+<p><strong>不计：</strong></p>
+<ul>
+<li>箭刻</li>
+</ul>
+<hr>
+<h2 id="11-字一色">11. 字一色 </h2>
+<p>和牌全部由字牌的：</p>
+<ul>
+<li>刻子</li>
+<li>杠</li>
+<li>将牌</li>
+</ul>
+<p>组成。</p>
+<p><strong>不计：</strong></p>
+<ul>
+<li>碰碰和</li>
+</ul>
+<hr>
+<h2 id="12-四暗刻">12. 四暗刻 </h2>
+<p>有四副暗刻或暗杠。</p>
+<p>暗杠属于暗刻。</p>
+<p><strong>不计：</strong></p>
+<ul>
+<li>门前清</li>
+<li>碰碰和</li>
+<li>不求人</li>
+</ul>
+<p>根据 MIL 补充规则，四暗刻属于必然门清番种；自摸时只计自摸，不再计不求人。</p>
+<hr>
+<h2 id="13-一色双龙会">13. 一色双龙会 </h2>
+<p>同一种花色：</p>
+<ul>
+<li>两个老少副（123、789）</li>
+<li>以 5 作将牌</li>
+</ul>
+<p>即：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>123 + 789 + 123 + 789 + 55
+</code></pre><p><strong>不计：</strong></p>
+<ul>
+<li>老少副</li>
+<li>一般高</li>
+<li>清一色</li>
+<li>平和</li>
+<li>缺一门</li>
+</ul>
+<hr>
+<h1 id="九-48-番">九、48 番 </h1>
+<h2 id="14-一色四同顺">14. 一色四同顺 </h2>
+<p>同一种花色有四副完全相同的顺子。</p>
+<p>例如：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>123 + 123 + 123 + 123
+</code></pre><p><strong>不计：</strong></p>
+<ul>
+<li>一色三节高</li>
+<li>一般高</li>
+<li>四归一</li>
+</ul>
+<hr>
+<h2 id="15-一色四节高">15. 一色四节高 </h2>
+<p>同一种花色有四副依次递增一位的刻子。</p>
+<p>例如：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>111 + 222 + 333 + 444
+</code></pre><p><strong>不计：</strong></p>
+<ul>
+<li>一色三同顺</li>
+<li>碰碰和</li>
+</ul>
+<hr>
+<h1 id="十-32-番">十、32 番 </h1>
+<h2 id="16-一色四步高">16. 一色四步高 </h2>
+<p>同一种花色有四副顺子，依次递增：</p>
+<ul>
+<li>1 位，或</li>
+<li>2 位</li>
+</ul>
+<p>例如：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>123 + 234 + 345 + 456
+</code></pre><p>或：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>123 + 345 + 567 + 789
+</code></pre><hr>
+<h2 id="17-三杠">17. 三杠 </h2>
+<p>和牌中有三副杠。</p>
+<hr>
+<h2 id="18-混幺九">18. 混幺九 </h2>
+<p>和牌由：</p>
+<ul>
+<li>字牌</li>
+<li>一</li>
+<li>九</li>
+</ul>
+<p>组成的刻子、杠及将牌。</p>
+<p><strong>不计：</strong></p>
+<ul>
+<li>碰碰和</li>
+<li>幺九刻</li>
+</ul>
+<hr>
+<h1 id="十一-24-番">十一、24 番 </h1>
+<h2 id="19-七对">19. 七对 </h2>
+<p>由七个对子组成：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>11 + 22 + 33 + 44 + 55 + 66 + 77
+</code></pre><p><strong>不计：</strong></p>
+<ul>
+<li>门前清</li>
+<li>不求人</li>
+<li>单钓将</li>
+</ul>
+<p>根据 MIL 补充规则，七对可以与若干其他番种复合，见“特殊复合规则”。</p>
+<hr>
+<h2 id="20-七星不靠">20. 七星不靠 </h2>
+<p>必须包含：</p>
+<ul>
+<li>东</li>
+<li>南</li>
+<li>西</li>
+<li>北</li>
+<li>中</li>
+<li>发</li>
+<li>白</li>
+</ul>
+<p>以及三种花色中按：</p>
+<ul>
+<li>147</li>
+<li>258</li>
+<li>369</li>
+</ul>
+<p>分别组成的不相靠序数牌。</p>
+<p>没有将牌。</p>
+<p><strong>不计：</strong></p>
+<ul>
+<li>五门齐</li>
+<li>不求人</li>
+<li>单钓将</li>
+</ul>
+<hr>
+<h2 id="21-全双刻">21. 全双刻 </h2>
+<p>和牌由偶数序数牌：</p>
+<ul>
+<li>2</li>
+<li>4</li>
+<li>6</li>
+<li>8</li>
+</ul>
+<p>组成刻子、杠和将牌。</p>
+<p><strong>不计：</strong></p>
+<ul>
+<li>碰碰和</li>
+<li>断幺</li>
+</ul>
+<hr>
+<h2 id="22-清一色">22. 清一色 </h2>
+<p>全部由同一种花色的序数牌组成。</p>
+<p><strong>不计：</strong></p>
+<ul>
+<li>无字</li>
+</ul>
+<p>可以另计其他符合条件的同系列番种。</p>
+<hr>
+<h2 id="23-一色三同顺">23. 一色三同顺 </h2>
+<p>同一种花色有三副相同顺子。</p>
+<p>例如：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>123 + 123 + 123
+</code></pre><p><strong>不计：</strong></p>
+<ul>
+<li>一色三节高</li>
+<li>一般高</li>
+</ul>
+<hr>
+<h2 id="24-一色三节高">24. 一色三节高 </h2>
+<p>同一种花色有三副依次递增一位的刻子。</p>
+<p>例如：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>111 + 222 + 333
+</code></pre><p><strong>不计：</strong></p>
+<ul>
+<li>一色三同顺</li>
+</ul>
+<hr>
+<h2 id="25-全大">25. 全大 </h2>
+<p>全部由：</p>
+<ul>
+<li>7</li>
+<li>8</li>
+<li>9</li>
+</ul>
+<p>组成。</p>
+<p><strong>不计：</strong></p>
+<ul>
+<li>大于五</li>
+</ul>
+<hr>
+<h2 id="26-全中">26. 全中 </h2>
+<p>全部由：</p>
+<ul>
+<li>4</li>
+<li>5</li>
+<li>6</li>
+</ul>
+<p>组成。</p>
+<p><strong>不计：</strong></p>
+<ul>
+<li>断幺</li>
+</ul>
+<hr>
+<h2 id="27-全小">27. 全小 </h2>
+<p>全部由：</p>
+<ul>
+<li>1</li>
+<li>2</li>
+<li>3</li>
+</ul>
+<p>组成。</p>
+<p><strong>不计：</strong></p>
+<ul>
+<li>小于五</li>
+</ul>
+<hr>
+<h1 id="十二-16-番">十二、16 番 </h1>
+<h2 id="28-清龙">28. 清龙 </h2>
+<p>同一种花色组成完整的：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>123 + 456 + 789
+</code></pre><p>即一至九连续组成三副顺子。</p>
+<hr>
+<h2 id="29-三色双龙会">29. 三色双龙会 </h2>
+<p>两种花色各有一个老少副：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>123 + 789
+</code></pre><p>另一种花色以：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>55
+</code></pre><p>作将牌。</p>
+<p><strong>不计：</strong></p>
+<ul>
+<li>喜相逢</li>
+<li>老少副</li>
+<li>平和</li>
+<li>无字</li>
+</ul>
+<hr>
+<h2 id="30-一色三步高">30. 一色三步高 </h2>
+<p>同一种花色三副顺子依次递增：</p>
+<ul>
+<li>1 位，或</li>
+<li>2 位。</li>
+</ul>
+<hr>
+<h2 id="31-全带五">31. 全带五 </h2>
+<p>每副牌及将牌都必须含有 5。</p>
+<p><strong>不计：</strong></p>
+<ul>
+<li>断幺</li>
+</ul>
+<hr>
+<h2 id="32-三同刻">32. 三同刻 </h2>
+<p>三副序数相同的刻子或杠。</p>
+<p>例如：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>333万 + 333条 + 333饼
+</code></pre><hr>
+<h2 id="33-三暗刻">33. 三暗刻 </h2>
+<p>三副暗刻。</p>
+<p>暗杠按暗刻处理。</p>
+<hr>
+<h1 id="十三-12-番">十三、12 番 </h1>
+<h2 id="34-全不靠">34. 全不靠 </h2>
+<p>由：</p>
+<ul>
+<li>三种花色按 147、258、369 组成的单张序数牌</li>
+<li>任意字牌</li>
+</ul>
+<p>构成 14 张牌，且不存在将牌、顺子或刻子的普通组合形式。</p>
+<hr>
+<h2 id="35-组合龙">35. 组合龙 </h2>
+<p>三种花色分别组成：</p>
+<ul>
+<li>147</li>
+<li>258</li>
+<li>369</li>
+</ul>
+<p>三组不能错位的单张序数牌。</p>
+<p>例如：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>147万 + 258条 + 369饼
+</code></pre><p>组合龙本身只是三组序数牌的特殊组合，不要求字牌。</p>
+<hr>
+<h2 id="36-大于五">36. 大于五 </h2>
+<p>由 6、7、8、9 组成的：</p>
+<ul>
+<li>顺子</li>
+<li>刻子</li>
+<li>杠</li>
+<li>将牌</li>
+</ul>
+<p>组成和牌。</p>
+<p><strong>不计：</strong></p>
+<ul>
+<li>无字</li>
+</ul>
+<hr>
+<h2 id="37-小于五">37. 小于五 </h2>
+<p>由 1、2、3、4 组成的：</p>
+<ul>
+<li>顺子</li>
+<li>刻子</li>
+<li>杠</li>
+<li>将牌</li>
+</ul>
+<p>组成和牌。</p>
+<p><strong>不计：</strong></p>
+<ul>
+<li>无字</li>
+</ul>
+<hr>
+<h2 id="38-三风刻">38. 三风刻 </h2>
+<p>和牌中有三副风牌刻子或杠。</p>
+<hr>
+<h1 id="十四-8-番">十四、8 番 </h1>
+<h2 id="39-花龙">39. 花龙 </h2>
+<p>三种花色各有一副顺子，三副顺子连接组成 1～9。</p>
+<p>例如：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>123万 + 456条 + 789饼
+</code></pre><hr>
+<h2 id="40-推不倒">40. 推不倒 </h2>
+<p>全部由牌面上下方向没有区别的牌组成。</p>
+<p>包括：</p>
+<h3 id="饼子">饼子 </h3>
+<ul>
+<li>1</li>
+<li>2</li>
+<li>3</li>
+<li>4</li>
+<li>5</li>
+<li>8</li>
+<li>9</li>
+</ul>
+<h3 id="条子">条子 </h3>
+<ul>
+<li>2</li>
+<li>4</li>
+<li>5</li>
+<li>6</li>
+<li>8</li>
+<li>9</li>
+</ul>
+<h3 id="字牌-1">字牌 </h3>
+<ul>
+<li>白</li>
+</ul>
+<p><strong>不计：</strong></p>
+<ul>
+<li>缺一门</li>
+</ul>
+<hr>
+<h2 id="41-三色三同顺">41. 三色三同顺 </h2>
+<p>三种花色有三副序数相同的顺子。</p>
+<p>例如：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>123万 + 123条 + 123饼
+</code></pre><hr>
+<h2 id="42-三色三节高">42. 三色三节高 </h2>
+<p>三种花色有三副依次递增一位的刻子。</p>
+<p>例如：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>111万 + 222条 + 333饼
+</code></pre><hr>
+<h2 id="43-无番和">43. 无番和 </h2>
+<p>和牌后，除花牌等不计入起和番数的项目外，不能数出其他番种。</p>
+<p>无番和本身为：</p>
+<p><strong>8 番。</strong></p>
+<hr>
+<h2 id="44-妙手回春">44. 妙手回春 </h2>
+<p>自摸牌墙上的最后一张牌成和。</p>
+<p><strong>不计：</strong></p>
+<ul>
+<li>自摸</li>
+</ul>
+<hr>
+<h2 id="45-海底捞月">45. 海底捞月 </h2>
+<p>和别人打出的最后一张牌。</p>
+<hr>
+<h2 id="46-杠上开花">46. 杠上开花 </h2>
+<p>因开杠后补牌而成和。</p>
+<p>补花后的和牌不属于杠上开花。</p>
+<p>根据 MIL 补充规则，杠上开花可以与符合条件的杠番以及妙手回春等复合。</p>
+<hr>
+<h2 id="47-抢杠和">47. 抢杠和 </h2>
+<p>和别人开明杠时的那张牌。</p>
+<p><strong>不计：</strong></p>
+<ul>
+<li>和绝张</li>
+</ul>
+<hr>
+<h1 id="十五-6-番">十五、6 番 </h1>
+<h2 id="48-碰碰和">48. 碰碰和 </h2>
+<p>由四副刻子或杠以及一个将牌组成。</p>
+<hr>
+<h2 id="49-混一色">49. 混一色 </h2>
+<p>由：</p>
+<ul>
+<li>一种花色的序数牌</li>
+<li>字牌</li>
+</ul>
+<p>组成。</p>
+<hr>
+<h2 id="50-三色三步高">50. 三色三步高 </h2>
+<p>三种花色三副顺子依次递增一位。</p>
+<hr>
+<h2 id="51-五门齐">51. 五门齐 </h2>
+<p>和牌中：</p>
+<ul>
+<li>万</li>
+<li>条</li>
+<li>饼</li>
+<li>风牌</li>
+<li>箭牌</li>
+</ul>
+<p>五类全部出现。</p>
+<hr>
+<h2 id="52-全求人">52. 全求人 </h2>
+<p>全靠：</p>
+<ul>
+<li>吃</li>
+<li>碰</li>
+<li>明杠</li>
+<li>单钓别人打出的牌</li>
+</ul>
+<p>成和。</p>
+<p>根据 MIL 补充规则：</p>
+<ul>
+<li>碰牌后的加杠仍可满足全求人条件；</li>
+<li>单钓本身不再另计。</li>
+</ul>
+<hr>
+<h2 id="53-双暗杠">53. 双暗杠 </h2>
+<p>和牌中有两副暗杠。</p>
+<hr>
+<h2 id="54-双箭刻">54. 双箭刻 </h2>
+<p>有两副箭牌刻子或杠。</p>
+<hr>
+<h1 id="十六-4-番">十六、4 番 </h1>
+<h2 id="55-全带幺">55. 全带幺 </h2>
+<p>每副牌及将牌都带有幺九牌。</p>
+<hr>
+<h2 id="56-不求人">56. 不求人 </h2>
+<p>没有：</p>
+<ul>
+<li>吃</li>
+<li>碰</li>
+<li>明杠</li>
+</ul>
+<p>并且自摸成和。</p>
+<p>注意：</p>
+<ul>
+<li>暗杠不破坏门清；</li>
+<li>必然门清的特殊番种自摸时，根据 MIL 补充规则不计不求人。</li>
+</ul>
+<hr>
+<h2 id="57-双明杠">57. 双明杠 </h2>
+<p>有两副明杠。</p>
+<hr>
+<h2 id="58-和绝张">58. 和绝张 </h2>
+<p>和牌所使用的牌，在牌池及桌面上已经有三张亮明的同牌，因此该牌是现存的第四张。</p>
+<p>抢杠和不计和绝张。</p>
+<hr>
+<h1 id="十七-2-番">十七、2 番 </h1>
+<h2 id="59-箭刻">59. 箭刻 </h2>
+<p>中、发、白任一刻子或杠。</p>
+<hr>
+<h2 id="60-圈风刻">60. 圈风刻 </h2>
+<p>与当前圈风相同的风牌刻子或杠。</p>
+<hr>
+<h2 id="61-门风刻">61. 门风刻 </h2>
+<p>与自己门风相同的风牌刻子或杠。</p>
+<hr>
+<h2 id="62-门前清">62. 门前清 </h2>
+<p>没有：</p>
+<ul>
+<li>吃</li>
+<li>碰</li>
+<li>明杠</li>
+</ul>
+<p>并以别人打出的牌成和。</p>
+<p>暗杠不破坏门前清。</p>
+<hr>
+<h2 id="63-平和">63. 平和 </h2>
+<p>由四副顺子和一个序数牌将牌组成。</p>
+<p>边张、坎张、单钓不影响平和的成立。</p>
+<p><strong>不计：</strong></p>
+<ul>
+<li>无字</li>
+</ul>
+<hr>
+<h2 id="64-四归一">64. 四归一 </h2>
+<p>四张相同的牌分别归属于：</p>
+<ul>
+<li>顺子</li>
+<li>刻子</li>
+<li>将牌</li>
+</ul>
+<p>等牌组中。</p>
+<p><strong>杠牌不计四归一。</strong></p>
+<hr>
+<h2 id="65-双同刻">65. 双同刻 </h2>
+<p>两副序数相同的刻子或杠。</p>
+<hr>
+<h2 id="66-双暗刻">66. 双暗刻 </h2>
+<p>两副暗刻。</p>
+<hr>
+<h2 id="67-暗杠">67. 暗杠 </h2>
+<p>自己抓到四张相同的牌并开暗杠。</p>
+<hr>
+<h2 id="68-断幺">68. 断幺 </h2>
+<p>和牌中没有：</p>
+<ul>
+<li>一</li>
+<li>九</li>
+<li>风牌</li>
+<li>箭牌</li>
+</ul>
+<hr>
+<h1 id="十八-1-番">十八、1 番 </h1>
+<h2 id="69-一般高">69. 一般高 </h2>
+<p>同一种花色有两副完全相同的顺子。</p>
+<p>例如：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>123万 + 123万
+</code></pre><hr>
+<h2 id="70-喜相逢">70. 喜相逢 </h2>
+<p>两种花色有两副序数相同的顺子。</p>
+<p>例如：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>123万 + 123条
+</code></pre><hr>
+<h2 id="71-连六">71. 连六 </h2>
+<p>同一种花色有六张连续序数牌，构成两副相连顺子。</p>
+<p>例如：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>123 + 456
+</code></pre><hr>
+<h2 id="72-老少副">72. 老少副 </h2>
+<p>同一种花色有：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>123 + 789
+</code></pre><p>两副顺子。</p>
+<hr>
+<h2 id="73-幺九刻">73. 幺九刻 </h2>
+<p>由以下牌组成的刻子或杠：</p>
+<ul>
+<li>一</li>
+<li>九</li>
+<li>风牌</li>
+</ul>
+<p>其中风牌的计番还受到门风刻、圈风刻等规则限制。</p>
+<p>根据 MIL 补充规则：</p>
+<ul>
+<li>已经作为主体番种必然组成部分的幺九刻，不重复计；</li>
+<li>九莲宝灯只有在和牌牌为 2、5、8 时另计 1 个幺九刻。</li>
+</ul>
+<hr>
+<h2 id="74-明杠">74. 明杠 </h2>
+<p>以下情况形成明杠：</p>
+<ol>
+<li>手中已有暗刻，碰进别人打出的第四张牌开杠；</li>
+<li>已有碰出的明刻，自己又抓到第四张相同牌加杠。</li>
+</ol>
+<hr>
+<h2 id="75-缺一门">75. 缺一门 </h2>
+<p>和牌中缺少：</p>
+<ul>
+<li>万</li>
+<li>条</li>
+<li>饼</li>
+</ul>
+<p>三种序数牌花色中的一种。</p>
+<p><strong>重要：</strong></p>
+<p>字牌不会取消缺一门。</p>
+<p>例如：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>万 + 饼 + 风牌
+</code></pre><p>仍然可以计缺一门。</p>
+<p>根据 MIL 补充规则，以下至少缺一门的番种可以另计缺一门：</p>
+<ul>
+<li>大三元</li>
+<li>小三元</li>
+<li>三风刻</li>
+<li>一色四同顺</li>
+<li>一色四节高</li>
+<li>一色四步高</li>
+<li>推不倒</li>
+</ul>
+<p>但：</p>
+<p><strong>推不倒不计缺一门。</strong></p>
+<hr>
+<h2 id="76-无字">76. 无字 </h2>
+<p>和牌中没有：</p>
+<ul>
+<li>东</li>
+<li>南</li>
+<li>西</li>
+<li>北</li>
+<li>中</li>
+<li>发</li>
+<li>白</li>
+</ul>
+<hr>
+<h2 id="77-边张">77. 边张 </h2>
+<p>以下属于边张：</p>
+<ul>
+<li>12 等 3</li>
+<li>123 等 3</li>
+<li>89 等 7</li>
+<li>789 等 7</li>
+</ul>
+<p>如果手牌同时存在其他牌也能完成相应顺子，则不计边张。</p>
+<p>例如：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>手中有 12345，和 3
+</code></pre><p>不计边张。</p>
+<hr>
+<h2 id="78-坎张">78. 坎张 </h2>
+<p>和顺子中间的牌。</p>
+<p>例如：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>13 等 2
+24 等 3
+46 等 5
+</code></pre><p>特殊情况下：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>4556 等 5
+</code></pre><p>也可构成坎张。</p>
+<p>但如果手牌形式上同时存在其他和牌方式，则不能计坎张。</p>
+<hr>
+<h2 id="79-单钓将">79. 单钓将 </h2>
+<p>只等待一张牌作为将牌成和。</p>
+<hr>
+<h2 id="80-自摸">80. 自摸 </h2>
+<p>自己抓牌成和。</p>
+<p>以下番种虽然属于自摸性质，但不重复计算：</p>
+<ul>
+<li>妙手回春</li>
+<li>杠上开花</li>
+</ul>
+<p>必然门清的特殊番种自摸时，根据 MIL 补充规则：</p>
+<p><strong>只计自摸，不计不求人。</strong></p>
+<hr>
+<h2 id="81-花牌">81. 花牌 </h2>
+<p>花牌包括：</p>
+<ul>
+<li>春</li>
+<li>夏</li>
+<li>秋</li>
+<li>冬</li>
+<li>梅</li>
+<li>兰</li>
+<li>竹</li>
+<li>菊</li>
+</ul>
+<p>每张花牌：</p>
+<p><strong>1 番。</strong></p>
+<p>花牌：</p>
+<ul>
+<li>不计入 8 番起和；</li>
+<li>和牌后才能计分；</li>
+<li>补花成和计自摸；</li>
+<li>补花成和不计杠上开花。</li>
+</ul>
+<hr>
+<h1 id="十九-特殊复合规则mil-补充">十九、特殊复合规则（MIL 补充） </h1>
+<p>以下规则用于解决 1998 原规则中若干长期存在的争议。</p>
+<h2 id="191-必然门清番种">19.1 必然门清番种 </h2>
+<p>以下番种属于必然门清：</p>
+<ul>
+<li>九莲宝灯</li>
+<li>连七对</li>
+<li>十三幺</li>
+<li>四暗刻</li>
+<li>七对</li>
+<li>七星不靠</li>
+<li>全不靠</li>
+</ul>
+<p>自摸时：</p>
+<ul>
+<li><strong>计自摸 1 番</strong></li>
+<li><strong>不计不求人</strong></li>
+</ul>
+<hr>
+<h2 id="192-七对的复合">19.2 七对的复合 </h2>
+<p>七对可以与以下番种复合：</p>
+<ul>
+<li>绿一色</li>
+<li>清幺九</li>
+<li>字一色</li>
+<li>混幺九</li>
+<li>清一色</li>
+<li>全大</li>
+<li>全中</li>
+<li>全小</li>
+<li>大于五</li>
+<li>小于五</li>
+<li>推不倒</li>
+<li>妙手回春</li>
+<li>海底捞月</li>
+<li>混一色</li>
+<li>五门齐</li>
+<li>四归一</li>
+<li>断幺</li>
+<li>缺一门</li>
+<li>无字</li>
+<li>自摸</li>
+</ul>
+<p>但是：</p>
+<ul>
+<li>字一色不计碰碰和；</li>
+<li>清幺九不计碰碰和；</li>
+<li>混幺九不计碰碰和。</li>
+</ul>
+<hr>
+<h2 id="193-杠类与暗刻类">19.3 杠类与暗刻类 </h2>
+<h3 id="杠类">杠类 </h3>
+<p>包括：</p>
+<ul>
+<li>四杠</li>
+<li>三杠</li>
+<li>双暗杠</li>
+<li>明暗杠</li>
+<li>双明杠</li>
+<li>暗杠</li>
+<li>明杠</li>
+</ul>
+<p>同一副和牌中，杠类番种：</p>
+<p><strong>最多同时计 1 个。</strong></p>
+<h3 id="暗刻类">暗刻类 </h3>
+<p>包括：</p>
+<ul>
+<li>四暗刻</li>
+<li>三暗刻</li>
+<li>双暗刻</li>
+</ul>
+<p>同一副和牌中，暗刻类番种：</p>
+<p><strong>最多同时计 1 个。</strong></p>
+<h3 id="两类之间">两类之间 </h3>
+<p>杠类与暗刻类可以分别各计 1 个。</p>
+<p>但：</p>
+<p><strong>双暗杠不计双暗刻。</strong></p>
+<hr>
+<h2 id="194-明暗杠">19.4 明暗杠 </h2>
+<p>一明杠 + 一暗杠：</p>
+<p><strong>5 番，称“明暗杠”。</strong></p>
+<p>另外：</p>
+<ul>
+<li>双明杠：4 番</li>
+<li>双暗杠：6 番</li>
+</ul>
+<hr>
+<h2 id="195-杠上开花">19.5 杠上开花 </h2>
+<p>杠上开花可以另计：</p>
+<ul>
+<li>明杠</li>
+<li>暗杠</li>
+<li>妙手回春</li>
+</ul>
+<p>但仍受杠类最多计 1 个的限制。</p>
+<hr>
+<h2 id="196-缺一门">19.6 缺一门 </h2>
+<p>至少缺一门花色的指定番种可以另计缺一门。</p>
+<p>特殊情况：</p>
+<p><strong>推不倒不计缺一门。</strong></p>
+<hr>
+<h2 id="197-必然包含幺九刻的番种">19.7 必然包含幺九刻的番种 </h2>
+<p>对于必然包含幺九刻的主体番种：</p>
+<ul>
+<li>大四喜</li>
+<li>小四喜</li>
+<li>三风刻</li>
+<li>大三元</li>
+<li>小三元</li>
+<li>字一色</li>
+<li>清幺九</li>
+<li>混幺九</li>
+<li>以及其他依法必然包含幺九刻的牌型</li>
+</ul>
+<p>主体番种所使用的、作为其成立条件必然出现的刻子：</p>
+<p><strong>不重复计算幺九刻。</strong></p>
+<p>特殊规定：</p>
+<ul>
+<li>大四喜不计门风刻、圈风刻；</li>
+<li>大三元、小三元不计箭刻；</li>
+<li>其他情况下，符合条件的门风刻、圈风刻、箭刻仍可计分。</li>
+</ul>
+<hr>
+<h2 id="198-组合龙与平和-听牌方式">19.8 组合龙与平和、听牌方式 </h2>
+<p>普通和牌中存在组合龙时：</p>
+<p><strong>可以另计平和。</strong></p>
+<p>如果听牌既能够解释为：</p>
+<ul>
+<li>组合龙的一部分</li>
+</ul>
+<p>同时又能解释为：</p>
+<ul>
+<li>边张</li>
+<li>坎张</li>
+<li>单钓将</li>
+</ul>
+<p>可以计相应的听牌番。</p>
+<hr>
+<h2 id="199-多面听不计边-坎-钓">19.9 多面听不计边、坎、钓 </h2>
+<p>手牌形式上同时听多种牌时：</p>
+<p><strong>不计边张、坎张、单钓。</strong></p>
+<p>这里包括已经使用完 4 张、理论上不能再摸到的牌。</p>
+<p>边张、坎张、单钓三者：</p>
+<p><strong>最多同时计 1 个。</strong></p>
+<hr>
+<h1 id="二十-一般高-喜相逢-老少副-连六的特别限制">二十、“一般高、喜相逢、老少副、连六”的特别限制 </h1>
+<p>这四个 1 番番种通常统称为：</p>
+<p><strong>般、逢、老、连。</strong></p>
+<p>包括：</p>
+<ul>
+<li>一般高</li>
+<li>喜相逢</li>
+<li>老少副</li>
+<li>连六</li>
+</ul>
+<p>MIL 补充规则规定：</p>
+<h2 id="201-出现四顺子番种">20.1 出现四顺子番种 </h2>
+<p>如果存在以下任一番种：</p>
+<ul>
+<li>一色双龙会</li>
+<li>一色四同顺</li>
+<li>一色四步高</li>
+<li>三色双龙会</li>
+</ul>
+<p>则：</p>
+<p><strong>般逢老连全部不计。</strong></p>
+<p>即：</p>
+<ul>
+<li>一般高：0</li>
+<li>喜相逢：0</li>
+<li>老少副：0</li>
+<li>连六：0</li>
+</ul>
+<hr>
+<h2 id="202-出现三顺子番种">20.2 出现三顺子番种 </h2>
+<p>如果存在以下任一番种：</p>
+<ul>
+<li>一色三同顺</li>
+<li>清龙</li>
+<li>一色三步高</li>
+<li>花龙</li>
+<li>三色三同顺</li>
+<li>三色三步高</li>
+</ul>
+<p>则：</p>
+<p><strong>般逢老连合计最多另加 1 番。</strong></p>
+<p>不能把四种全部分别计算。</p>
+<hr>
+<h2 id="203-没有上述高级顺子番种时">20.3 没有上述高级顺子番种时 </h2>
+<p>当没有上述三顺子或四顺子番种时：</p>
+<ul>
+<li>4 副顺子之间，般逢老连最多计 <strong>3 番</strong></li>
+<li>3 副顺子之间，般逢老连最多计 <strong>2 番</strong></li>
+</ul>
+<p>具体如何组合，仍须遵守不拆移、不得相同及套算一次原则。</p>
+<hr>
+<h1 id="二十一-九莲宝灯与幺九刻">二十一、九莲宝灯与幺九刻 </h1>
+<p>九莲宝灯主体已经包含大量一、九牌。</p>
+<p>MIL 补充规则规定：</p>
+<ul>
+<li>如果和牌牌是 2、5、8，可以另计 <strong>1 个幺九刻</strong>；</li>
+<li>和牌牌不是 2、5、8 时，不另计幺九刻；</li>
+<li>不得从九莲宝灯主体重复拆出多个幺九刻。</li>
+</ul>
+<hr>
+<h1 id="二十二-大四喜-小四喜与花色番">二十二、大四喜、小四喜与花色番 </h1>
+<p>大四喜、小四喜可以另计：</p>
+<ul>
+<li>混一色</li>
+<li>字一色</li>
+</ul>
+<p>绿一色：</p>
+<ul>
+<li>不计混一色；</li>
+<li>如果没有发，可以计清一色。</li>
+</ul>
+<hr>
+<h1 id="二十三-清幺九与同刻">二十三、清幺九与同刻 </h1>
+<p>清幺九：</p>
+<ul>
+<li>不计双同刻；</li>
+<li>可以计三同刻。</li>
+</ul>
+<hr>
+<h1 id="二十四-最后一张牌">二十四、最后一张牌 </h1>
+<p>当抓到牌墙最后一张牌时：</p>
+<p><strong>不能：</strong></p>
+<ul>
+<li>开明杠</li>
+<li>暗杠</li>
+<li>补花</li>
+</ul>
+<p>只能完成必要的和牌或依法结束牌局。</p>
+<p>当最后一张牌被打出时：</p>
+<p><strong>只能和牌，不能：</strong></p>
+<ul>
+<li>吃</li>
+<li>碰</li>
+<li>大明杠</li>
+</ul>
+<hr>
+<h1 id="二十五-常见计番实例">二十五、常见计番实例 </h1>
+<h2 id="251-缺一门--字牌">25.1 缺一门 + 字牌 </h2>
+<p>例如和牌同时具有：</p>
+<ul>
+<li>万</li>
+<li>饼</li>
+<li>东南等字牌</li>
+</ul>
+<p>因为缺少条子：</p>
+<p><strong>缺一门 = 1 番。</strong></p>
+<p>字牌不会使缺一门失效。</p>
+<hr>
+<h2 id="252-清龙">25.2 清龙 </h2>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>123 + 456 + 789
+</code></pre><p>成立：</p>
+<p><strong>清龙 16 番。</strong></p>
+<p>清龙属于“三顺子番种”，因此般逢老连只能从剩余牌组中按规定合计最多取得 <strong>1 番</strong>，不能把一般高、喜相逢、老少副、连六四种全部叠加。</p>
+<hr>
+<h2 id="253-七对自摸">25.3 七对自摸 </h2>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>七对 + 自摸
+</code></pre><p>成立：</p>
+<ul>
+<li>七对 24</li>
+<li>自摸 1</li>
+</ul>
+<p>不计：</p>
+<ul>
+<li>不求人</li>
+<li>门前清</li>
+</ul>
+<hr>
+<h2 id="254-双暗杠">25.4 双暗杠 </h2>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>两副暗杠
+</code></pre><p>成立：</p>
+<p><strong>双暗杠 6 番。</strong></p>
+<p>不能再另计：</p>
+<ul>
+<li>两个暗杠</li>
+<li>双暗刻</li>
+</ul>
+<p>杠类和暗刻类需要分别遵守其各自的最多计 1 个规则。</p>
+<hr>
+<h2 id="255-一明杠一暗杠">25.5 一明杠一暗杠 </h2>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>一明杠 + 一暗杠
+</code></pre><p>成立：</p>
+<p><strong>明暗杠 5 番。</strong></p>
+<p>不是：</p>
+<pre data-role="codeBlock" data-info="text" class="language-text text"><code>明杠 1 + 暗杠 2
+</code></pre><hr>
+<h2 id="256-推不倒">25.6 推不倒 </h2>
+<p>推不倒成立时：</p>
+<p><strong>不计缺一门。</strong></p>
+<p>即使牌型客观上只出现两种序数牌花色，也不能另加缺一门。</p>
+
+      </div>
+      
+      
+    
+    
+    
+    
+    
+    
+  
+    </body></html>

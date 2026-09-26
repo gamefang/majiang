@@ -1,3 +1,10 @@
+---
+export_on_save:
+  html: true
+---
+
+<a href="index.html">返回</a>
+
 # 国标麻将算番规则
 
 ## 一、原始规则与参考资料
