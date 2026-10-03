@@ -2,7 +2,7 @@
 const FANS_DATA = [
     // 88番 (7种)
     { id: 'dasixi', name: '大四喜', score: 88, desc: '4副風牌刻子 🀀🀀🀀 🀁🀁🀁 🀂🀂🀂 🀃🀃🀃', exclusion: ['quanfengke', 'menfengke', 'sanfengke', 'pengpenghe', 'yaojiuke'] },
-    { id: 'dasanyuan', name: '大三元', score: 88, desc: '中發白3副刻子 🀄🀄🀄 🀅🀅🀅 🀆🀆🀆', exclusion: ['jianke', 'shuangjianke'] },
+    { id: 'dasanyuan', name: '大三元', score: 88, desc: '中發白3副刻子 🀄🀄🀄 🀅🀅🀅 🀆🀆🀆', exclusion: ['jianke', 'shuangjianke', 'yaojiuke'] },
     { id: 'lvyise', name: '綠一色', score: 88, desc: '由23468條及發組成 🀑🀒🀓 🀕🀕🀕 🀗🀗 🀅🀅🀅', exclusion: ['hunyise'] },
     { id: 'jiulianbaodeng', name: '九蓮寶燈', score: 88, desc: '同花色1112345678999 🀇🀇🀇🀈🀉🀊🀋🀌🀍🀎🀏🀏🀏和任意萬', exclusion: ['qingyise', 'buqiuren', 'menqianqing'] },
     { id: 'sigang', name: '四槓', score: 88, desc: '4副槓 🀇🀇🀇🀇 🀉🀉🀉🀉 🀕🀕🀕🀕 🀝🀝🀝🀝', exclusion: ['pengpenghe', 'dandiaojiang', 'sangang', 'shuangangang', 'shuangminggang', 'angang', 'minggang'] },
@@ -11,9 +11,9 @@ const FANS_DATA = [
 
     // 64番 (6种)
     { id: 'qingyaojiu', name: '清幺九', score: 64, desc: '僅由序數牌1、9組成 🀇🀇🀇 🀏🀏🀏 🀐🀐🀐 🀘🀘🀘 🀙🀙', exclusion: ['pengpenghe', 'shuangtongke', 'wuzi', 'yaojiuke'] },
-    { id: 'xiaosixi', name: '小四喜', score: 64, desc: '3風刻+1風將牌 🀀🀀🀀 🀁🀁🀁 🀂🀂🀂 🀃🀃', exclusion: ['sanfengke'] },
-    { id: 'xiaosanyuan', name: '小三元', score: 64, desc: '2箭刻+1箭將牌 🀄🀄🀄 🀅🀅🀅 🀆🀆', exclusion: ['jianke', 'shuangjianke'] },
-    { id: 'ziyise', name: '字一色', score: 64, desc: '由字牌組成的和牌 🀀🀀🀀 🀁🀁🀁 🀂🀂🀂 🀄🀄🀄 🀆🀆', exclusion: ['pengpenghe'] },
+    { id: 'xiaosixi', name: '小四喜', score: 64, desc: '3風刻+1風將牌 🀀🀀🀀 🀁🀁🀁 🀂🀂🀂 🀃🀃', exclusion: ['sanfengke', 'yaojiuke'] },
+    { id: 'xiaosanyuan', name: '小三元', score: 64, desc: '2箭刻+1箭將牌 🀄🀄🀄 🀅🀅🀅 🀆🀆', exclusion: ['jianke', 'shuangjianke', 'yaojiuke'] },
+    { id: 'ziyise', name: '字一色', score: 64, desc: '由字牌組成的和牌 🀀🀀🀀 🀁🀁🀁 🀂🀂🀂 🀄🀄🀄 🀆🀆', exclusion: ['pengpenghe', 'yaojiuke'] },
     { id: 'sianke', name: '四暗刻', score: 64, desc: '4副暗刻 🀇🀇🀇 🀉🀉🀉 🀕🀕🀕 🀝🀝🀝', exclusion: ['menqianqing', 'pengpenghe', 'buqiuren', 'sananke', 'shuanganke'] },
     { id: 'yiseshuanglonghui', name: '一色雙龍會', score: 64, desc: '一種花色的兩個老少副，5為將牌 🀇🀈🀉 🀇🀈🀉 🀍🀎🀏 🀍🀎🀏 🀋🀋', exclusion: ['pinghe', 'qidui', 'qingyise', 'laoshaofu', 'yibangao', 'xixiangfeng', 'lianliu', 'wuzi', 'queyimen'] },
 
@@ -50,13 +50,13 @@ const FANS_DATA = [
     { id: 'zuhelong', name: '組合龍', score: 12, desc: '3種花色的147、258、369不能錯位的序數牌 🀇🀊🀍 🀑🀔🀗 🀛🀞🀡', exclusion: [] },
     { id: 'dayuwu', name: '大於五', score: 12, desc: '由序數牌6-9的順子、刻子、將牌組成的和牌 🀌🀍🀎 🀏🀏🀏 🀟🀠🀡 🀘🀘🀘 🀗🀗', exclusion: ['wuzi'] },
     { id: 'xiaoyuwu', name: '小於五', score: 12, desc: '由序數牌1-4的順子、刻子、將牌組成的和牌 🀇🀈🀉 🀈🀉🀊 🀑🀒🀓 🀛🀛🀛 🀜🀜', exclusion: ['wuzi'] },
-    { id: 'sanfengke', name: '三風刻', score: 12, desc: '3副風刻 🀀🀀🀀 🀂🀂🀂 🀃🀃🀃', exclusion: [] },
+    { id: 'sanfengke', name: '三風刻', score: 12, desc: '3副風刻 🀀🀀🀀 🀂🀂🀂 🀃🀃🀃', exclusion: ['yaojiuke'] },
 
     // 8番 (9种)
     { id: 'miaoshouhuichun', name: '妙手回春', score: 8, desc: '自摸牌牆上最後一張牌和牌', exclusion: ['zimo'] },
     { id: 'haidilaoyue', name: '海底撈月', score: 8, desc: '和打出的最後一張牌', exclusion: [] },
     { id: 'gangshangkaihua', name: '槓上開花', score: 8, desc: '開槓抓進的牌成和牌', exclusion: ['zimo'] },
-    { id: 'qiangganghe', name: '搶槓和', score: 8, desc: '和別人抓開明槓的牌', exclusion: ['hujuezhang'] },
+    { id: 'qiangganghe', name: '搶槓和', score: 8, desc: '和別人開明槓的牌', exclusion: ['hujuezhang'] },
     { id: 'hualong', name: '花龍', score: 8, desc: '3種花色的3副順子連線成1-9的序數牌 🀇🀈🀉 🀓🀔🀕 🀟🀠🀡', exclusion: [] },
     { id: 'tuibudao', name: '推不倒', score: 8, desc: '由牌面圖形沒有上下區別的牌組成的和牌 🀙🀙🀙 🀜🀝🀞 🀓🀔🀕 🀆🀆🀆 🀗🀗', exclusion: ['queyimen'] },
     { id: 'sansesantongshun', name: '三色三同順', score: 8, desc: '3種花色3副序數相同的順子 🀇🀈🀉 🀐🀑🀒 🀙🀚🀛', exclusion: ['xixiangfeng'] },

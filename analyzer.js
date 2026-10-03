@@ -104,8 +104,58 @@ class MahjongAnalyzer {
         const handTiles = [...this.hand];
         const tileCount = this.countTiles(handTiles);
         const decompositions = [];
+
         this._decompose(tileCount, [], null, decompositions);
+        // 额外增加“组合龙”的特殊拆解
+        this._decomposeWithZuHeLong(tileCount, decompositions);
+
         return decompositions;
+    }
+
+    _decomposeWithZuHeLong(tileCount, results) {
+        const patterns = [[1, 4, 7], [2, 5, 8], [3, 6, 9]];
+        const assignments = [
+            ['w', 't', 'b'],
+            ['w', 'b', 't'],
+            ['t', 'w', 'b'],
+            ['t', 'b', 'w'],
+            ['b', 'w', 't'],
+            ['b', 't', 'w']
+        ];
+
+        for (const assignment of assignments) {
+            const remaining = { ...tileCount };
+            let matched = true;
+
+            // 从牌中取出组合龙的9张特殊顺子牌。
+            for (let p = 0; p < patterns.length && matched; p++) {
+                for (const value of patterns[p]) {
+                    const tileId = assignment[p] + value;
+                    if ((remaining[tileId] || 0) <= 0) {
+                        matched = false;
+                        break;
+                    }
+                    remaining[tileId]--;
+                }
+            }
+
+            if (!matched) continue;
+
+            // 剩余牌仍必须按原来的普通和牌规则组成剩余牌组+将。
+            const restDecompositions = [];
+            this._decompose(remaining, [], null, restDecompositions);
+
+            for (const rest of restDecompositions) {
+                // 组合龙本身占3副特殊顺子。
+                if (3 + rest.sets.length + this.melds.length !== 4) continue;
+
+                results.push({
+                    sets: [...rest.sets],
+                    pair: rest.pair,
+                    zuhelong: true
+                });
+            }
+        }
     }
 
     _decompose(tileCount, sets, pair, results) {
@@ -366,7 +416,7 @@ class MahjongAnalyzer {
         this.check32Fan(fans, allSets, pair, allTiles, tileCount);
         this.check24Fan(fans, allSets, pair, allTiles, tileCount);
         
-        this.checkLowerFans(fans, allSets, pair, allTiles, tileCount);
+        this.checkLowerFans(fans, allSets, pair, allTiles, tileCount, decomp);
         this.addConditionFans(fans);
         this.addWinTypeFans(fans, decomp, allSets, pair);
 
@@ -510,7 +560,7 @@ class MahjongAnalyzer {
         if (allTiles.every(t => isNumberTile(t) && TILES[t].value <= 3)) this.addFan(fans, 'quanxiao');
     }
 
-    checkLowerFans(fans, allSets, pair, allTiles, tileCount) {
+    checkLowerFans(fans, allSets, pair, allTiles, tileCount, decomp = null) {
         const pongs = allSets.filter(s => s.type === 'pong' || s.type === 'minggang' || s.type === 'angang');
         const chis = allSets.filter(s => s.type === 'chi');
         const gangs = allSets.filter(s => s.type === 'minggang' || s.type === 'angang');
@@ -526,7 +576,7 @@ class MahjongAnalyzer {
         if (this.checkQuanDaiWu(allSets, pair)) this.addFan(fans, 'quandaiwu');
 
         // 12番
-        if (this.checkZuHeLong(allSets)) this.addFan(fans, 'zuhelong');
+        if (decomp?.zuhelong) this.addFan(fans, 'zuhelong');
         if (allTiles.every(t => isNumberTile(t) && TILES[t].value >= 6)) this.addFan(fans, 'dayuwu');
         if (allTiles.every(t => isNumberTile(t) && TILES[t].value <= 4)) this.addFan(fans, 'xiaoyuwu');
         if (pongs.filter(s => TILES[s.tiles[0]]?.type === TILE_TYPES.WIND).length === 3) this.addFan(fans, 'sanfengke');
@@ -550,7 +600,7 @@ class MahjongAnalyzer {
         if (pongs.filter(s => TILES[s.tiles[0]]?.type === TILE_TYPES.DRAGON).length === 2) this.addFan(fans, 'shuangjianke');
 
         // 4番
-        if (this.checkQuanDaiYao(allSets, pair)) this.addFan(fans, 'quandaiyao');
+        if (this.checkQuanDaiYao(allSets, pair, !!decomp?.zuhelong)) this.addFan(fans, 'quandaiyao');
         if (gangs.filter(s => s.type === 'minggang').length === 2) this.addFan(fans, 'shuangminggang');
 
         // 2番
@@ -808,7 +858,8 @@ class MahjongAnalyzer {
         return true;
     }
 
-    checkQuanDaiYao(allSets, pair) {
+    checkQuanDaiYao(allSets, pair, hasZuHeLong = false) {
+        if (hasZuHeLong) return false;
         if (!isTerminalOrHonor(pair)) return false;
         for (const set of allSets) {
             if (!set.tiles.some(t => isTerminalOrHonor(t))) return false;
@@ -844,32 +895,8 @@ class MahjongAnalyzer {
         return false;
     }
 
-    checkZuHeLong(allSets) {
-        const chis = allSets.filter(s => s.type === 'chi');
-        const allChiTiles = [];
-        for (const chi of chis) allChiTiles.push(...chi.tiles);
-        
-        const patterns = [[1, 4, 7], [2, 5, 8], [3, 6, 9]];
-        const hasSuits = { w: new Set(), t: new Set(), b: new Set() };
-        for (const tile of allChiTiles) {
-            if (isNumberTile(tile)) {
-                hasSuits[tile.charAt(0)].add(parseInt(tile.charAt(1)));
-            }
-        }
-        
-        const suits = ['w', 't', 'b'];
-        for (let i = 0; i < 6; i++) {
-            const assignment = [suits[i % 3], suits[(i + 1) % 3], suits[(i + 2) % 3]];
-            let valid = true;
-            for (let p = 0; p < 3; p++) {
-                for (const val of patterns[p]) {
-                    if (!hasSuits[assignment[p]].has(val)) { valid = false; break; }
-                }
-                if (!valid) break;
-            }
-            if (valid) return true;
-        }
-        return false;
+    checkZuHeLong(decomp) {
+        return !!decomp?.zuhelong;
     }
 
     checkSanSeShuangLongHui(allSets, pair) {
